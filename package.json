@@ -1,12 +1,15 @@
 {
   "name": "pino-socket",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A pino 'transport' for writing to a tcp or udp socket",
   "homepage": "https://github.com/jsumners/pino-socket",
   "bugs": "https://github.com/jsumners/pino-socket/issues",
   "main": "psock.js",
   "scripts": {
     "test": "gulp test"
+  },
+  "bin": {
+    "pino-socket": "./psock.js"
   },
   "keywords": [
     "pino",
