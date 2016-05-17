@@ -4,7 +4,7 @@ This module provides a "transport" for [pino][pino] that simply forwards
 messages to an arbitrary socket. The socket can be UDPv4 or TCPv4. The module
 can echo the received logs or work silently.
 
-You should install install `pino-socket` globally for ease of use:
+You should install `pino-socket` globally for ease of use:
 
 ```bash
 $ npm install --production -g pino-socket
