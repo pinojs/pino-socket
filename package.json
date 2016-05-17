@@ -9,7 +9,7 @@
     "test": "gulp test"
   },
   "bin": {
-    "pino-socket": "./psock.js"
+    "pino-socket": "./app.js"
   },
   "keywords": [
     "pino",
