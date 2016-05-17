@@ -8,6 +8,9 @@
   "scripts": {
     "test": "gulp test"
   },
+  "bin": {
+    "pino-socket": "./psock.js"
+  },
   "keywords": [
     "pino",
     "logging"
