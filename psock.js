@@ -110,8 +110,8 @@ process.on('SIGTERM', function sigterm () {
 
 const myTransport = through2.obj(function transport (chunk, enc, cb) {
   lastInput = Date.now()
-  log(chunk)
-  send(chunk)
+  setImmediate(log.bind(null, chunk))
+  setImmediate(() => send(chunk))
   cb()
 })
 
