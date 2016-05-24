@@ -29,67 +29,118 @@ function createUdpListener (msgHandler) {
   })
 }
 
-function killPsock () {
-  setImmediate(() => this.kill())
+function tcpTest (done, socketOptions, cb) {
+  let socket
+  createTcpListener((msg) => cb(msg, socket))
+    .then((sock) => {
+      socket = sock
+      const address = socket.address().address
+      const port = socket.address().port
+      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      const psock = spawn(
+        'node',
+        [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp'].concat(socketOptions)
+      )
+
+      logit.stdout.on('data', (data) => psock.stdin.write(data))
+      logit.stderr.on('data', (data) => console.log(`logit err: ${data}`))
+      psock.stderr.on('data', (data) => console.log(`psock err: ${data}`))
+
+      logit.on('close', () => psock.stdin.end(
+        setImmediate.bind(null, psock.kill)
+      ))
+    })
+    .catch(done)
+}
+
+function udpTest (done, socketOptions, cb) {
+  let socket
+  createUdpListener((msg) => cb(msg, socket))
+    .then((sock) => {
+      socket = sock
+      const address = socket.address().address
+      const port = socket.address().port
+      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      const psock = spawn(
+        'node',
+        [`${__dirname}/../psock.js`, '-a', address, '-p', port].concat(socketOptions)
+      )
+
+      logit.stdout.on('data', (data) => psock.stdin.write(data))
+      logit.stderr.on('data', (data) => console.log(`logit err: ${data}`))
+      psock.stderr.on('data', (data) => console.log(`psock err: ${data}`))
+
+      logit.on('close', () => psock.stdin.end(
+        setImmediate.bind(null, psock.kill)
+      ))
+    })
+    .catch(done)
 }
 
 test('tcp send', function tcp (done) {
-  let socket
-  createTcpListener(
-    (msg) => {
-      try {
-        expect(msg).to.contain('"foo":"bar"')
-        expect(msg.substr(-1)).to.equal('\n')
-        done()
-      } catch (e) {
-        done(e)
-      } finally {
-        socket.close()
-      }
+  tcpTest(done, [], (msg, socket) => {
+    try {
+      expect(msg).to.contain('"foo":"bar"')
+      expect(msg.substr(-1)).to.equal('\n')
+      done()
+    } catch (e) {
+      done(e)
+    } finally {
+      socket.end()
+      socket.unref()
     }
-  )
-    .then((sock) => {
-      socket = sock
-      const address = socket.address().address
-      const port = socket.address().port
-      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
-      const psock = spawn('node', [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp'])
+  })
+})
 
-      logit.stdout.on('data', (data) => psock.stdin.write(data))
-      logit.stderr.on('data', (data) => console.log(`logit err: ${data}`))
-      psock.stderr.on('data', (data) => console.log(`psock err: ${data}`))
-
-      logit.on('close', () => psock.stdin.end(killPsock.bind(psock)))
-    })
-    .catch(done)
+test('tcp cee send', function tcpCee (done) {
+  tcpTest(done, ['--cee'], (msg, socket) => {
+    try {
+      expect(msg).to.contain('@cee: {')
+      expect(msg).to.contain('"foo":"bar"')
+      expect(msg.substr(-1)).to.equal('\n')
+      done()
+    } catch (e) {
+      done(e)
+    } finally {
+      socket.end()
+      socket.unref()
+    }
+  })
 })
 
 test('udp send', function udp (done) {
-  let socket
-  createUdpListener(
-    (msg) => {
-      try {
-        expect(msg).to.contain('"foo":"bar"')
-        expect(msg.substr(-1)).to.equal('\n')
-        done()
-      } catch (e) {
-        done(e)
-      } finally {
-        socket.close()
-      }
+  udpTest(done, [], (msg, socket) => {
+    try {
+      expect(msg).to.contain('"foo":"bar"')
+      expect(msg.substr(-1)).to.equal('\n')
+      done()
+    } catch (e) {
+      done(e)
+    } finally {
+      socket.close()
+      socket.unref()
     }
-  )
-    .then((sock) => {
-      socket = sock
-      const address = socket.address().address
-      const port = socket.address().port
-      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
-      const psock = spawn('node', [`${__dirname}/../psock.js`, '-a', address, '-p', port])
-
-      logit.stdout.on('data', (data) => psock.stdin.write(data))
-      logit.stderr.on('data', (data) => console.log(`logit err: ${data}`))
-      psock.stderr.on('data', (data) => console.log(`psock err: ${data}`))
-
-      logit.on('close', () => psock.stdin.end(killPsock.bind(psock)))
-    })
+  })
 })
+
+test('udp cee send', function tcpCee (done) {
+  udpTest(done, ['-c'], (msg, socket) => {
+    try {
+      expect(msg).to.contain('@cee: {')
+      expect(msg).to.contain('"foo":"bar"')
+      expect(msg.substr(-1)).to.equal('\n')
+      done()
+    } catch (e) {
+      done(e)
+    } finally {
+      socket.close()
+      socket.unref()
+    }
+  })
+})
+
+// This ridiculousness is because when the tests are run via
+// gulp.mocha there's something that causes it to run idefinitely.
+// It doesn't matter that we have close all of the sockets and killed all
+// of the children.
+after(function () { setImmediate(process.exit) })

@@ -18,7 +18,7 @@ gulp.task('lint', function lintTask () {
 
 gulp.task('pre-test', function preTest () {
   return gulp
-    .src(srcIncludes)
+    .src(srcIncludes.concat(['!test/**']))
     .pipe($.istanbul())
     .pipe($.istanbul.hookRequire())
 })

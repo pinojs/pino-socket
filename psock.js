@@ -11,16 +11,59 @@ let options = {
   address: '127.0.0.1',
   mode: 'udp',
   port: '514',
-  echo: true
+  echo: true,
+  cee: false
 }
-const argv = nopt(
-  {address: String, mode: ['tcp', 'udp'], port: Number, echo: Boolean},
-  {a: '--address', m: '--mode', p: '--port', e: '--echo', ne: '--no-echo'},
-  process.argv
-)
+const longOpts = {
+  address: String,
+  mode: ['tcp', 'udp'],
+  port: Number,
+  echo: Boolean,
+  cee: Boolean
+}
+const shortOpts = {
+  a: '--address',
+  m: '--mode',
+  p: '--port',
+  e: '--echo',
+  ne: '--no-echo',
+  c: '--cee',
+  nc: '--no-cee'
+}
+const argv = nopt(longOpts, shortOpts, process.argv)
 options = Object.assign(options, argv)
 
 const log = (options.echo) ? console.log : function () {}
+
+function TcpWriter (socket) {
+  if (options.cee) {
+    Object.defineProperty(this, 'write', {
+      value: (message) => socket.write(`@cee: ${message}\n`)
+    })
+  } else {
+    Object.defineProperty(this, 'write', {
+      value: (message) => socket.write(`${message}\n`)
+    })
+  }
+}
+
+function UdpWriter (socket) {
+  if (options.cee) {
+    Object.defineProperty(this, 'write', {
+      value: (message) => {
+        const buf = new Buffer(`@cee: ${message}\n`, 'utf8')
+        socket.send(buf, 0, buf.length, options.port, options.address)
+      }
+    })
+  } else {
+    Object.defineProperty(this, 'write', {
+      value: (message) => {
+        const buf = new Buffer(`${message}\n`, 'utf8')
+        socket.send(buf, 0, buf.length, options.port, options.address)
+      }
+    })
+  }
+}
 
 let socket
 let send
@@ -30,22 +73,13 @@ if (options.mode === 'tcp') {
     host: options.address,
     port: options.port
   })
-  send = (message) => {
-    socket.write(message + '\n')
-  }
+  const writer = new TcpWriter(socket)
+  send = writer.write
   close = socket.end
 } else {
   socket = dgram.createSocket('udp4')
-  send = (message) => {
-    const buf = new Buffer(message + '\n')
-    socket.send(
-      buf,
-      0,
-      buf.length,
-      options.port,
-      options.address
-    )
-  }
+  const writer = new UdpWriter(socket)
+  send = writer.write
   close = socket.close
 }
 
