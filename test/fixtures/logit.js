@@ -1,6 +1,6 @@
-'use strict';
+'use strict'
 
-const pino = require('pino');
-const log = pino({level: 'debug'});
+const pino = require('pino')
+const log = pino({ level: 'debug' })
 
-log.debug({foo: 'bar'});
+log.debug({ foo: 'bar' })
