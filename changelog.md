@@ -1,3 +1,7 @@
+### 0.3.0
++ Add cli help output via `--help` (@mcollina)
++ Add a Contributing.md file
+
 ### 0.2.0
 + Correct documentation
 + Switch to [standardjs.com][sjs] code style
