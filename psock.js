@@ -6,6 +6,8 @@ const split2 = require('split2')
 const pump = require('pump')
 const through2 = require('through2')
 const nopt = require('nopt')
+const fs = require('fs')
+const path = require('path')
 
 let options = {
   address: '127.0.0.1',
@@ -19,7 +21,9 @@ const longOpts = {
   mode: ['tcp', 'udp'],
   port: Number,
   echo: Boolean,
-  cee: Boolean
+  cee: Boolean,
+  help: Boolean,
+  version: Boolean
 }
 const shortOpts = {
   a: '--address',
@@ -28,10 +32,22 @@ const shortOpts = {
   e: '--echo',
   ne: '--no-echo',
   c: '--cee',
-  nc: '--no-cee'
+  nc: '--no-cee',
+  h: '--help',
+  v: '--version'
 }
 const argv = nopt(longOpts, shortOpts, process.argv)
 options = Object.assign(options, argv)
+
+if (options.help) {
+  console.log(fs.readFileSync(path.join(__dirname, 'help.txt'), 'utf8'))
+  process.exit(0)
+}
+
+if (options.version) {
+  console.log('pino-socket', require('./package.json').version)
+  process.exit(0)
+}
 
 const log = (options.echo) ? console.log : function () {}
 
