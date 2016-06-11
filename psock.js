@@ -14,12 +14,16 @@ let options = {
   mode: 'udp',
   port: '514',
   echo: true,
-  cee: false
+  cee: false,
+  reconnect: false,
+  reconnectTries: Infinity
 }
 const longOpts = {
   address: String,
   mode: ['tcp', 'udp'],
   port: Number,
+  reconnect: Boolean,
+  reconnectTries: Number,
   echo: Boolean,
   cee: Boolean,
   help: Boolean,
@@ -29,6 +33,8 @@ const shortOpts = {
   a: '--address',
   m: '--mode',
   p: '--port',
+  r: '--reconnect',
+  t: '--reconnectTries',
   e: '--echo',
   ne: '--no-echo',
   c: '--cee',
