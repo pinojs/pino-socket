@@ -6,7 +6,7 @@ const fork = require('child_process').fork
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
-test.only('tcp reconnect', function testTcpReconnect (done) {
+test('tcp reconnect', function testTcpReconnect (done) {
   const serverScript = path.join(__dirname, 'fixtures', 'server.js')
   let msgCount = 0
   let address
