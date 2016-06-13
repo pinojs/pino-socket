@@ -27,6 +27,9 @@ $ node foo | pino-socket -a 10.10.10.5 -p 5000
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
++ `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off
++ `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts
+  before giving up. Default: infinite
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
 + `--cee` (`-c`): prefix the message with `@cee: ` for [rsyslog cee][rsyscee]
