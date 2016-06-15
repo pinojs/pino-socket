@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const fifoQueue = require('cavalcade').fifoQueue
 const tcpConnectionFactory = require(path.join(__dirname, 'lib', 'TcpConnection'))
 const udpConnectionFactory = require(path.join(__dirname, 'lib', 'UdpConnection'))
 const split2 = require('split2')
@@ -17,6 +18,7 @@ let options = {
   cee: false,
   reconnect: false,
   reconnectTries: Infinity,
+  bufferSize: 4096,
   settings: null
 }
 const longOpts = {
@@ -25,6 +27,7 @@ const longOpts = {
   port: Number,
   reconnect: Boolean,
   reconnectTries: Number,
+  bufferSize: Number,
   echo: Boolean,
   cee: Boolean,
   help: Boolean,
@@ -37,6 +40,7 @@ const shortOpts = {
   p: '--port',
   r: '--reconnect',
   t: '--reconnectTries',
+  b: '--bufferSize',
   e: '--echo',
   ne: '--no-echo',
   c: '--cee',
@@ -69,6 +73,7 @@ if (options.settings) {
   }
 }
 
+const messageBuffer = fifoQueue(options.bufferSize)
 const log = (options.echo) ? console.log : function () {}
 
 let connection
@@ -105,8 +110,10 @@ process.on('SIGTERM', function sigterm () {
 
 const myTransport = through2.obj(function transport (chunk, enc, cb) {
   lastInput = Date.now()
-  setImmediate(log.bind(null, chunk))
-  setImmediate(() => connection.write(chunk))
+  messageBuffer.push(chunk)
+  const toSend = messageBuffer.pop()
+  setImmediate(log.bind(null, toSend))
+  setImmediate(() => connection.write(toSend))
   cb()
 })
 
