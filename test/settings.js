@@ -5,7 +5,7 @@ const net = require('net')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
-test.only('loads settings from a file (switches take precedence)', function (done) {
+test('loads settings from a file (switches take precedence)', function (done) {
   const messages = []
   const server = net.createServer((connection) => {
     connection.on('data', (data) => {
