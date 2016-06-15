@@ -12,6 +12,7 @@
   [36m[1mFlags[22m[39m
   [0m-h  | --help              Display Help
   -v  | --version           display Version
+  -s  | --settings          read settings from a JSON file (switches take precedence)
   -a  | --address           the address for the destination socket; default: 127.0.0.1
   -m  | --mode              the protocol, either 'udp' or 'tcp'; default: 'udp'
   -p  | --port              the port on the destination socket; default: '514'

@@ -16,7 +16,8 @@ let options = {
   echo: true,
   cee: false,
   reconnect: false,
-  reconnectTries: Infinity
+  reconnectTries: Infinity,
+  settings: null
 }
 const longOpts = {
   address: String,
@@ -27,7 +28,8 @@ const longOpts = {
   echo: Boolean,
   cee: Boolean,
   help: Boolean,
-  version: Boolean
+  version: Boolean,
+  settings: String
 }
 const shortOpts = {
   a: '--address',
@@ -40,7 +42,8 @@ const shortOpts = {
   c: '--cee',
   nc: '--no-cee',
   h: '--help',
-  v: '--version'
+  v: '--version',
+  s: '--settings'
 }
 const argv = nopt(longOpts, shortOpts, process.argv)
 options = Object.assign(options, argv)
@@ -53,6 +56,17 @@ if (options.help) {
 if (options.version) {
   console.log('pino-socket', require('./package.json').version)
   process.exit(0)
+}
+
+if (options.settings) {
+  try {
+    const loadedSettings = require(path.resolve(options.settings))
+    const settings = Object.assign(loadedSettings, argv)
+    options = Object.assign(options, settings)
+  } catch (e) {
+    console.error('`settings` parameter specified but could not load file: %s', e.message)
+    process.exit(1)
+  }
 }
 
 const log = (options.echo) ? console.log : function () {}
