@@ -58,14 +58,14 @@ test('tcp reconnect', function testTcpReconnect (done) {
 
     setTimeout(() =>
       psock.stdin.write('log 1\n'),
-      500
+      50
     )
   }
 
   function secondConnection () {
     setTimeout(() =>
       psock.stdin.write('log 2\n'),
-      1000
+      100
     )
   }
 })
