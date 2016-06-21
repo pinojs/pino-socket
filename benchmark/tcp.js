@@ -7,8 +7,12 @@ const spawn = require('child_process').spawn
 const psockPath = path.resolve(path.join(__dirname, '..', 'psock.js'))
 
 let messages = 0
+let bytesReceived = 0
 const server = net.createServer((connection) => {
-  connection.on('data', () => { messages += 1 })
+  connection.on('data', (chunk) => {
+    messages += chunk.toString().match(/[0-9]+\n/g).length
+    bytesReceived += chunk.length
+  })
 })
 
 server.listen(0, () => {
@@ -22,9 +26,11 @@ server.listen(0, () => {
 
   let start
   let stop
+  let bytesTransferred = 0
   function send (cb) {
     start = Date.now()
     for (let i = 0, j = 100000; i < j; i += 1) {
+      bytesTransferred += 2
       if (i === 99999) {
         psock.stdin.write(i + '\n', cb)
         continue
@@ -41,6 +47,8 @@ server.listen(0, () => {
     const seconds = (stop - start) / 1000
     const msgsPerSecond = messages / seconds
     console.log('wrote %s messages in %s seconds: %s messages/second', messages, seconds, msgsPerSecond)
+    console.log('bytes transfered: %s', bytesTransferred)
+    console.log('bytes received: %s', bytesReceived)
     process.exit(0)
   }
 

@@ -31,19 +31,8 @@ $ node foo | pino-socket -a 10.10.10.5 -p 5000
 + `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off
 + `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts
   before giving up. Default: infinite
-+ `--bufferSize <n>` (`-b <n>`): set number (`<n>`) of messages to queue when.
-  Default: `4096`
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
-+ `--cee` (`-c`): prefix the message with `@cee: ` for [rsyslog cee][rsyscee]
-  support. Default: disabled.
-+ `--no-cee` (`-nc`): explicitly disable CEE prefixing
-
-**Buffer size:** The `bufferSize` option configures the internal buffer used
-by *pino-socket*. This buffer sets the maximum number of messages it will
-hold in-memory while processing the incoming messages. If the buffer is full
-then the oldest message in the buffer will be dropped to make room for
-the incoming message.
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
 
@@ -59,8 +48,7 @@ a hash of settings for the the application. A full settings file is:
   "mode": "tcp",
   "reconnect": true,
   "reconnectTries": 20,
-  "echo": false,
-  "cee": false
+  "echo": false
 }
 ```
 

@@ -18,8 +18,5 @@
   -p  | --port              the port on the destination socket; default: '514'
   -r  | --reconnect         enable tcp mode reconnecting
   -t  | --reconnectTries    number of reconnect attempts to make; default 'Inifinity'
-  -b  | --bufferSize        number of messages to queue under load; default: '4096'
   -ne | --no-echo           disable echoing received messages to stdout
-  -c  | --cee               prefix the message with '@cee: '; default: disabled
-  -nc | --no-cee            disable cee explicitly
 

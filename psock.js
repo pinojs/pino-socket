@@ -1,7 +1,6 @@
 'use strict'
 
 const path = require('path')
-const fifoQueue = require('cavalcade').fifoQueue
 const tcpConnectionFactory = require(path.join(__dirname, 'lib', 'TcpConnection'))
 const udpConnectionFactory = require(path.join(__dirname, 'lib', 'UdpConnection'))
 const split2 = require('split2')
@@ -15,10 +14,8 @@ let options = {
   mode: 'udp',
   port: '514',
   echo: true,
-  cee: false,
   reconnect: false,
   reconnectTries: Infinity,
-  bufferSize: 4096,
   settings: null
 }
 const longOpts = {
@@ -27,9 +24,7 @@ const longOpts = {
   port: Number,
   reconnect: Boolean,
   reconnectTries: Number,
-  bufferSize: Number,
   echo: Boolean,
-  cee: Boolean,
   help: Boolean,
   version: Boolean,
   settings: String
@@ -40,11 +35,8 @@ const shortOpts = {
   p: '--port',
   r: '--reconnect',
   t: '--reconnectTries',
-  b: '--bufferSize',
   e: '--echo',
   ne: '--no-echo',
-  c: '--cee',
-  nc: '--no-cee',
   h: '--help',
   v: '--version',
   s: '--settings'
@@ -73,9 +65,6 @@ if (options.settings) {
   }
 }
 
-const messageBuffer = fifoQueue(options.bufferSize)
-const log = (options.echo) ? console.log : function () {}
-
 let connection
 if (options.mode === 'tcp') {
   connection = tcpConnectionFactory(options)
@@ -83,15 +72,7 @@ if (options.mode === 'tcp') {
   connection = udpConnectionFactory(options)
 }
 
-let lastInput = 0
 function shutdown () {
-  // We block termination until the piped process has had a chance to shutdown.
-  let _lastInput = lastInput
-  lastInput = 0
-  while (_lastInput !== lastInput) {
-    _lastInput = lastInput
-    lastInput = 0
-  }
   try {
     connection.close()
   } catch (e) {
@@ -109,12 +90,9 @@ process.on('SIGTERM', function sigterm () {
 })
 
 const myTransport = through2.obj(function transport (chunk, enc, cb) {
-  lastInput = Date.now()
-  messageBuffer.push(chunk)
-  const toSend = messageBuffer.pop()
-  setImmediate(log.bind(null, toSend))
-  setImmediate(() => connection.write(toSend))
+  setImmediate(() => console.log(chunk))
   cb()
 })
 
-pump(process.stdin, split2(), myTransport)
+process.stdin.pipe(connection, {end: false})
+if (options.echo) pump(process.stdin, split2(), myTransport)

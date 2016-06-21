@@ -32,7 +32,6 @@ test('loads settings from a file (switches take precedence)', function (done) {
     function finished (err) {
       if (err) return done(err)
       expect(messages.length).to.equal(2)
-      expect(messages[0]).to.contain('@cee: ')
       psock.kill()
       server.close()
       server.unref()
