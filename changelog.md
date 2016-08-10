@@ -1,3 +1,6 @@
+### 0.4.1
++ Shutdown when `stdin` closes (issue #5)
+
 ### 0.2.0
 + Correct documentation
 + Switch to [standardjs.com][sjs] code style
