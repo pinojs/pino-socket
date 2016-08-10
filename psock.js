@@ -95,4 +95,5 @@ const myTransport = through2.obj(function transport (chunk, enc, cb) {
 })
 
 process.stdin.pipe(connection, {end: false})
+process.stdin.on('close', () => { shutdown() })
 if (options.echo) pump(process.stdin, split2(), myTransport)
