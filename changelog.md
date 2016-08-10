@@ -1,3 +1,6 @@
+### 0.4.1
++ Shutdown when `stdin` closes (issue #5)
+
 ### 0.4.0
 + Add support for reconnecting to dropped TCP destinations (issue #3)
   + `--reconnect` (`-r`) to enable
