@@ -1,6 +1,6 @@
 {
   "name": "pino-socket",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "A pino 'transport' for writing to a tcp or udp socket",
   "homepage": "https://github.com/jsumners/pino-socket",
   "bugs": "https://github.com/jsumners/pino-socket/issues",
@@ -38,9 +38,12 @@
     "standard": "^7.1.0"
   },
   "dependencies": {
+    "backoff": "^2.5.0",
     "nopt": "^3.0.6",
     "pump": "^1.0.1",
+    "safe-buffer": "^5.0.1",
     "split2": "^2.0.1",
+    "tcp-ping": "^0.1.1",
     "through2": "^2.0.1"
   }
 }

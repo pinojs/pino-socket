@@ -1,0 +1,23 @@
+
+  [0m[37m[1m[4mpino-socket[22m[39m[0m
+
+  [0mTo send [33mpino[39m logs via udp:[0m
+
+     [33mcat log | pino-socket -a 192.168.1.42 -p 1234[39m
+
+  [0mTo send [33mpino[39m logs via tcp:[0m
+
+     [33mcat log | pino-socket -m tcp -a 192.168.1.42 -p 1234[39m
+
+  [36m[1mFlags[22m[39m
+  [0m-h  | --help              Display Help
+  -v  | --version           display Version
+  -a  | --address           the address for the destination socket; default: 127.0.0.1
+  -m  | --mode              the protocol, either 'udp' or 'tcp'; default: 'udp'
+  -p  | --port              the port on the destination socket; default: '514'
+  -r  | --reconnect         enable tcp mode reconnecting
+  -t  | --reconnectTries    number of reconnect attempts to make; default 'Inifinity'
+  -ne | --no-echo           disable echoing received messages to stdout
+  -c  | --cee               prefix the message with '@cee: '; default: disabled
+  -nc | --no-cee            disable cee explicitly
+
