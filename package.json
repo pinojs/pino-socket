@@ -1,6 +1,6 @@
 {
   "name": "pino-socket",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A pino 'transport' for writing to a tcp or udp socket",
   "homepage": "https://github.com/jsumners/pino-socket",
   "bugs": "https://github.com/jsumners/pino-socket/issues",
