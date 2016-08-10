@@ -116,3 +116,5 @@ const myTransport = through2.obj(function transport (chunk, enc, cb) {
 })
 
 pump(process.stdin, split2(), myTransport)
+
+process.stdin.on('close', () => { shutdown() })
