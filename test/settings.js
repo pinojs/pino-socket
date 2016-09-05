@@ -6,10 +6,11 @@ const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
 test('loads settings from a file (switches take precedence)', function (done) {
-  const messages = []
+  let messages = []
   const server = net.createServer((connection) => {
     connection.on('data', (data) => {
-      messages.push(data.toString())
+      const lines = data.toString().split('\n').filter((l) => l !== '\n' && l !== '')
+      messages = messages.concat(lines)
     })
   })
 
