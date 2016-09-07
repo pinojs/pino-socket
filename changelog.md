@@ -1,3 +1,11 @@
+### 1.0.0
++ Load settings from a json file. See the [settings test](test/settings.js)
+  for an example.
++ Remove CEE support (use `pino-syslog` instead)
++ Add support for dealing with TCP back pressure. See [issue 4][i4].
+
+[i4]: https://github.com/jsumners/pino-socket/issues/4
+
 ### 0.4.1
 + Shutdown when `stdin` closes (issue #5)
 
