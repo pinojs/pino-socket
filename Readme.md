@@ -24,6 +24,7 @@ $ node foo | pino-socket -a 10.10.10.5 -p 5000
 
 ## Options
 
++ `--settings` (`-s`): read settings from a JSON file (switches take precedence)
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
@@ -32,11 +33,42 @@ $ node foo | pino-socket -a 10.10.10.5 -p 5000
   before giving up. Default: infinite
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
-+ `--cee` (`-c`): prefix the message with `@cee: ` for [rsyslog cee][rsyscee]
-  support. Default: disabled.
-+ `--no-cee` (`-nc`): explicitly disable CEE prefixing
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
+
+### Settings JSON File
+
+The `--settings` switch can be used to specify a JSON file that contains
+a hash of settings for the the application. A full settings file is:
+
+```json
+{
+  "address": "127.0.0.1",
+  "port": 514,
+  "mode": "tcp",
+  "reconnect": true,
+  "reconnectTries": 20,
+  "echo": false
+}
+```
+
+Note that command line switches take precedence over settings in a settings
+file. For example, given the settings file:
+
+```json
+{
+  "address": "10.0.0.5",
+  "port": 514
+}
+```
+
+And the command line:
+
+```bash
+$ yes | pino-socket -s ./settings.json -p 1514
+```
+
+The connection will be made to address `10.0.0.5` on UDP port `1514`.
 
 ## License
 

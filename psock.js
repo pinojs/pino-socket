@@ -14,9 +14,9 @@ let options = {
   mode: 'udp',
   port: '514',
   echo: true,
-  cee: false,
   reconnect: false,
-  reconnectTries: Infinity
+  reconnectTries: Infinity,
+  settings: null
 }
 const longOpts = {
   address: String,
@@ -25,9 +25,9 @@ const longOpts = {
   reconnect: Boolean,
   reconnectTries: Number,
   echo: Boolean,
-  cee: Boolean,
   help: Boolean,
-  version: Boolean
+  version: Boolean,
+  settings: String
 }
 const shortOpts = {
   a: '--address',
@@ -37,10 +37,9 @@ const shortOpts = {
   t: '--reconnectTries',
   e: '--echo',
   ne: '--no-echo',
-  c: '--cee',
-  nc: '--no-cee',
   h: '--help',
-  v: '--version'
+  v: '--version',
+  s: '--settings'
 }
 const argv = nopt(longOpts, shortOpts, process.argv)
 options = Object.assign(options, argv)
@@ -55,7 +54,16 @@ if (options.version) {
   process.exit(0)
 }
 
-const log = (options.echo) ? console.log : function () {}
+if (options.settings) {
+  try {
+    const loadedSettings = require(path.resolve(options.settings))
+    const settings = Object.assign(loadedSettings, argv)
+    options = Object.assign(options, settings)
+  } catch (e) {
+    console.error('`settings` parameter specified but could not load file: %s', e.message)
+    process.exit(1)
+  }
+}
 
 let connection
 if (options.mode === 'tcp') {
@@ -64,15 +72,7 @@ if (options.mode === 'tcp') {
   connection = udpConnectionFactory(options)
 }
 
-let lastInput = 0
 function shutdown () {
-  // We block termination until the piped process has had a chance to shutdown.
-  let _lastInput = lastInput
-  lastInput = 0
-  while (_lastInput !== lastInput) {
-    _lastInput = lastInput
-    lastInput = 0
-  }
   try {
     connection.close()
   } catch (e) {
@@ -90,10 +90,9 @@ process.on('SIGTERM', function sigterm () {
 })
 
 const myTransport = through2.obj(function transport (chunk, enc, cb) {
-  lastInput = Date.now()
-  setImmediate(log.bind(null, chunk))
-  setImmediate(() => connection.write(chunk))
+  setImmediate(() => console.log(chunk))
   cb()
 })
 
-pump(process.stdin, split2(), myTransport)
+process.stdin.on('close', () => { shutdown() })
+if (options.echo) pump(process.stdin, split2(), myTransport)

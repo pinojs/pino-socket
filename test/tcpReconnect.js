@@ -23,6 +23,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
         server.removeAllListeners('message')
         msgCount += 1
         server.kill()
+        psock.stdin.write('log 2\n') // dropped due to paused stdin
         setImmediate(secondServer)
     }
   })
@@ -58,14 +59,14 @@ test('tcp reconnect', function testTcpReconnect (done) {
 
     setTimeout(() =>
       psock.stdin.write('log 1\n'),
-      500
+      50
     )
   }
 
   function secondConnection () {
     setTimeout(() =>
-      psock.stdin.write('log 2\n'),
-      1000
+      psock.stdin.write('log 3\n'),
+      100
     )
   }
 })

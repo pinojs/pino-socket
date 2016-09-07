@@ -92,41 +92,9 @@ test('tcp send', function tcp (done) {
   })
 })
 
-test('tcp cee send', function tcpCee (done) {
-  tcpTest(done, ['--cee'], (msg, socket) => {
-    try {
-      expect(msg).to.contain('@cee: {')
-      expect(msg).to.contain('"foo":"bar"')
-      expect(msg.substr(-1)).to.equal('\n')
-      done()
-    } catch (e) {
-      done(e)
-    } finally {
-      socket.end()
-      socket.unref()
-    }
-  })
-})
-
 test('udp send', function udp (done) {
   udpTest(done, [], (msg, socket) => {
     try {
-      expect(msg).to.contain('"foo":"bar"')
-      expect(msg.substr(-1)).to.equal('\n')
-      done()
-    } catch (e) {
-      done(e)
-    } finally {
-      socket.close()
-      socket.unref()
-    }
-  })
-})
-
-test('udp cee send', function tcpCee (done) {
-  udpTest(done, ['-c'], (msg, socket) => {
-    try {
-      expect(msg).to.contain('@cee: {')
       expect(msg).to.contain('"foo":"bar"')
       expect(msg.substr(-1)).to.equal('\n')
       done()
