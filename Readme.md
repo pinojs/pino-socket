@@ -1,5 +1,7 @@
 # pino-socket
 
+**Lead maintainer:** [jsumners](https://github.com/jsumners)
+
 This module provides a "transport" for [pino][pino] that simply forwards
 messages to an arbitrary socket. The socket can be UDPv4 or TCPv4. The module
 can echo the received logs or work silently.

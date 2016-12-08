@@ -1,9 +1,9 @@
 {
   "name": "pino-socket",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A pino 'transport' for writing to a tcp or udp socket",
-  "homepage": "https://github.com/jsumners/pino-socket",
-  "bugs": "https://github.com/jsumners/pino-socket/issues",
+  "homepage": "https://github.com/pinojs/pino-socket",
+  "bugs": "https://github.com/pinojs/pino-socket/issues",
   "main": "psock.js",
   "scripts": {
     "test": "gulp test"
@@ -19,18 +19,18 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jsumners/pino-socket"
+    "url": "https://github.com/pinojs/pino-socket"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-istanbul": "^1.1.1",
-    "gulp-load-plugins": "^1.2.2",
+    "gulp-load-plugins": "^1.4.0",
     "gulp-mocha": "^3.0.1",
     "gulp-standard": "^8.0.2",
-    "istanbul": "^0.4.3",
-    "mocha": "^3.0.2",
-    "pino": "^2.8.3",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "pino": "^3.0.5",
     "pre-commit": "^1.1.3"
   },
   "dependencies": {
@@ -38,6 +38,6 @@
     "nopt": "^3.0.6",
     "pump": "^1.0.1",
     "split2": "^2.0.1",
-    "through2": "^2.0.1"
+    "through2": "^2.0.3"
   }
 }
