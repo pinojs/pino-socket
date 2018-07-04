@@ -8,6 +8,7 @@ const expect = require('chai').expect
 
 test('issue #5', function (done) {
   const server = net.createServer()
+  server.unref()
   server.listen(() => {
     const scriptPath = path.join(__dirname, 'fixtures', 'issue5.js')
     const script = spawn('node', [ scriptPath ])
@@ -18,10 +19,8 @@ test('issue #5', function (done) {
     script.stdout.pipe(psock.stdin)
     psock.stdin.on('data', (data) => { output += data.toString() })
     psock.stdout.on('close', () => {
-      server.close(() => {
-        expect(output.length > 0)
-        done()
-      })
+      expect(output.length > 0)
+      done()
     })
   })
 })
