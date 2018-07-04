@@ -1,37 +1,54 @@
 'use strict'
 /* eslint-env node, mocha */
 
-const path = require('path')
-const fork = require('child_process').fork
+const net = require('net')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
+function startServer ({address, port, next}) {
+  const socket = net.createServer((connection) => {
+    connection.on('data', (data) => {
+      next({action: 'data', data})
+      connection.end()
+    })
+  })
+
+  socket.listen(port || 0, address || '127.0.0.1', () => {
+    next({
+      action: 'started',
+      address: socket.address().address,
+      port: socket.address().port
+    })
+  })
+
+  return socket
+}
+
 test('tcp reconnect', function testTcpReconnect (done) {
-  const serverScript = path.join(__dirname, 'fixtures', 'server.js')
   let msgCount = 0
   let address
   let port
   let psock
 
-  let server = fork(serverScript)
-  server.on('message', (msg) => {
+  let server = startServer({next})
+  function next (msg) {
     switch (msg.action) {
       case 'started':
         firstConnection(msg)
         break
       case 'data':
-        server.removeAllListeners('message')
         msgCount += 1
-        server.kill()
-        psock.stdin.write('log 2\n') // dropped due to paused stdin
-        setImmediate(secondServer)
+        server.close(() => {
+          psock.stdin.write('log 2\n') // dropped due to paused stdin
+          setImmediate(secondServer)
+        })
+
     }
-  })
-  server.send({action: 'startServer'})
+  }
 
   function secondServer () {
-    server = fork(serverScript)
-    server.on('message', (msg) => {
+    server = startServer({address, port, next})
+    function next (msg) {
       switch (msg.action) {
         case 'started':
           secondConnection()
@@ -39,12 +56,11 @@ test('tcp reconnect', function testTcpReconnect (done) {
         case 'data':
           msgCount += 1
           expect(msgCount).to.equal(2)
-          server.kill()
+          server.close()
           psock.kill()
           done()
       }
-    })
-    server.send({action: 'startServer', address, port})
+    }
   }
 
   function firstConnection (details) {
@@ -57,16 +73,15 @@ test('tcp reconnect', function testTcpReconnect (done) {
     // for debugging
     // psock.stdout.pipe(process.stdout)
 
-    setTimeout(() =>
-      psock.stdin.write('log 1\n'),
-      50
-    )
+    setTimeout(() => {
+      psock.stdin.write('log 1\n')
+    }, 50)
   }
 
   function secondConnection () {
     setTimeout(() =>
       psock.stdin.write('log 3\n'),
-      100
+    100
     )
   }
 })

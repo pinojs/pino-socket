@@ -9,9 +9,11 @@ const expect = require('chai').expect
 function createTcpListener (msgHandler) {
   return new Promise((resolve, reject) => {
     const socket = net.createServer((connection) => {
-      connection.on('data', (data) => msgHandler(data.toString()))
+      connection.on('data', (data) => {
+        msgHandler(data.toString())
+      })
     })
-    socket.listen((err) => {
+    socket.listen(0, '127.0.0.1', (err) => {
       if (err) {
         return reject(err)
       }
@@ -37,18 +39,15 @@ function tcpTest (done, socketOptions, cb) {
       const address = socket.address().address
       const port = socket.address().port
       const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      logit.unref()
       const psock = spawn(
         'node',
         [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp'].concat(socketOptions)
       )
-
+      psock.unref()
       logit.stdout.on('data', (data) => psock.stdin.write(data))
       logit.stderr.on('data', (data) => console.log(`logit err: ${data}`))
       psock.stderr.on('data', (data) => console.log(`psock err: ${data}`))
-
-      logit.on('close', () => psock.stdin.end(
-        setImmediate.bind(null, psock.kill)
-      ))
     })
     .catch(done)
 }
