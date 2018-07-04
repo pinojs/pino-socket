@@ -6,7 +6,8 @@
   "bugs": "https://github.com/pinojs/pino-socket/issues",
   "main": "psock.js",
   "scripts": {
-    "test": "gulp test"
+    "test": "standard && mocha --ui qunit -R dot test",
+    "cov": "gulp test"
   },
   "bin": {
     "pino-socket": "./app.js"
