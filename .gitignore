@@ -103,3 +103,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# code coverage
+.nyc_output

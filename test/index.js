@@ -85,7 +85,7 @@ test('tcp send', function tcp (done) {
     } catch (e) {
       done(e)
     } finally {
-      socket.end()
+      socket.close()
       socket.unref()
     }
   })
