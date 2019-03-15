@@ -5,10 +5,10 @@ const net = require('net')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
-function startServer ({address, port, next}) {
+function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
     connection.on('data', (data) => {
-      next({action: 'data', data})
+      next({ action: 'data', data })
       connection.end()
     })
   })
@@ -30,7 +30,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
   let port
   let psock
 
-  let server = startServer({next})
+  let server = startServer({ next })
   function next (msg) {
     switch (msg.action) {
       case 'started':
@@ -42,12 +42,11 @@ test('tcp reconnect', function testTcpReconnect (done) {
           psock.stdin.write('log 2\n') // dropped due to paused stdin
           setImmediate(secondServer)
         })
-
     }
   }
 
   function secondServer () {
-    server = startServer({address, port, next})
+    server = startServer({ address, port, next })
     function next (msg) {
       switch (msg.action) {
         case 'started':

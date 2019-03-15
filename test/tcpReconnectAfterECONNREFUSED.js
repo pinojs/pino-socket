@@ -5,10 +5,10 @@ const net = require('net')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
-function startServer ({address, port, next}) {
+function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
     connection.on('data', (data) => {
-      next({action: 'data', data})
+      next({ action: 'data', data })
       connection.end()
     })
   })
@@ -35,7 +35,7 @@ test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (done) {
     port: 2030
   })
   setTimeout(() => {
-    let server = startServer({next, port: 2030})
+    let server = startServer({ next, port: 2030 })
 
     function next (msg) {
       switch (msg.action) {
