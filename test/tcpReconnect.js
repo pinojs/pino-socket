@@ -9,7 +9,7 @@ function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
     connection.on('data', (data) => {
       next({ action: 'data', data })
-      connection.end()
+      connection.destroy()
     })
   })
 
