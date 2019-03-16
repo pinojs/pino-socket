@@ -27,7 +27,7 @@ function createUdpListener (msgHandler) {
     const socket = dgram.createSocket('udp4')
     socket.on('message', (msg) => msgHandler(msg.toString()))
     socket.on('error', (err) => console.log(`socket error: ${err.message}`))
-    socket.bind({address: '127.0.0.1'}, () => resolve(socket))
+    socket.bind({ address: '127.0.0.1' }, () => resolve(socket))
   })
 }
 
@@ -85,7 +85,7 @@ test('tcp send', function tcp (done) {
     } catch (e) {
       done(e)
     } finally {
-      socket.end()
+      socket.close()
       socket.unref()
     }
   })
