@@ -23,10 +23,15 @@ like so:
 ```bash
 $ node foo | pino-socket -a 10.10.10.5 -p 5000
 ```
+OR
+```bash
+$ node foo | pino-socket -u /tmp/unix.sock
+```
 
 ## Options
 
 + `--settings` (`-s`): read settings from a JSON file (switches take precedence)
++ `--unixsocket` (`-u`): the unix socket path for the destination. Default: ``.
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
