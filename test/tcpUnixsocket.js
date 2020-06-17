@@ -57,9 +57,3 @@ test('unix socket test', (done) => {
     }
   })
 })
-
-// This ridiculousness is because when the tests are run via
-// gulp.mocha there's something that causes it to run idefinitely.
-// It doesn't matter that we have close all of the sockets and killed all
-// of the children.
-after(function () { setImmediate(process.exit) })
