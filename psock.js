@@ -10,6 +10,7 @@ const nopt = require('nopt')
 const fs = require('fs')
 
 let options = {
+  unixsocket: '',
   address: '127.0.0.1',
   mode: 'udp',
   port: '514',
@@ -19,6 +20,7 @@ let options = {
   settings: null
 }
 const longOpts = {
+  unixsocket: String,
   address: String,
   mode: ['tcp', 'udp'],
   port: Number,
@@ -30,6 +32,7 @@ const longOpts = {
   settings: String
 }
 const shortOpts = {
+  u: '--unixsocket',
   a: '--address',
   m: '--mode',
   p: '--port',

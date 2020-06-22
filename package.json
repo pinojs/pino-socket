@@ -1,7 +1,7 @@
 {
   "name": "pino-socket",
   "version": "2.0.0",
-  "description": "A pino 'transport' for writing to a tcp or udp socket",
+  "description": "A pino 'transport' for writing to a tcp, udp, or unix socket",
   "homepage": "https://github.com/pinojs/pino-socket",
   "bugs": "https://github.com/pinojs/pino-socket/issues",
   "main": "psock.js",
