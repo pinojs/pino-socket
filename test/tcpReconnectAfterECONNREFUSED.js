@@ -35,7 +35,7 @@ test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (done) {
     port: 2030
   })
   setTimeout(() => {
-    let server = startServer({ next, port: 2030 })
+    const server = startServer({ next, port: 2030 })
 
     function next (msg) {
       switch (msg.action) {
@@ -56,7 +56,7 @@ test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (done) {
     port = details.port
     psock = spawn(
       'node',
-      [ `${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp', '-r' ]
+      [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp', '-r']
     )
     // for debugging
     // psock.stdout.pipe(process.stdout)
