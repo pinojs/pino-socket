@@ -67,7 +67,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
     port = details.port
     psock = spawn(
       'node',
-      [ `${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp', '-r', '-t', 2 ]
+      [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp', '-r', '-t', 2]
     )
     // for debugging
     // psock.stdout.pipe(process.stdout)

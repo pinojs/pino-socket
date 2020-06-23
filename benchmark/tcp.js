@@ -18,7 +18,7 @@ const server = net.createServer((connection) => {
 server.listen(0, () => {
   const address = server.address().address
   const port = server.address().port
-  const psock = spawn('node', [ psockPath, '-m', 'tcp', '-a', address, '-p', port ])
+  const psock = spawn('node', [psockPath, '-m', 'tcp', '-a', address, '-p', port])
   psock.on('close', (code, signal) => console.log('psock closed: (%s, %s)', code, signal))
   psock.on('error', (err) => console.error('psock error: %s', err.message))
   psock.stderr.on('data', (data) => console.error('psock stderr: %s', data))

@@ -11,9 +11,9 @@ test('issue #5', function (done) {
   server.unref()
   server.listen(() => {
     const scriptPath = path.join(__dirname, 'fixtures', 'issue5.js')
-    const script = spawn('node', [ scriptPath ])
+    const script = spawn('node', [scriptPath])
     const psockPath = path.join(__dirname, '..', 'psock.js')
-    const psock = spawn('node', [ psockPath, '-a', server.address().address, '-p', server.address().port, '-m', 'tcp', '-ne' ])
+    const psock = spawn('node', [psockPath, '-a', server.address().address, '-p', server.address().port, '-m', 'tcp', '-ne'])
 
     let output = ''
     script.stdout.pipe(psock.stdin)
