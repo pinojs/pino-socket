@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "chai": "^4.2.0",
-    "mocha": "^8.0.1",
+    "mocha": "^9.0.0",
     "nyc": "^15.1.0",
     "pino": "^6.3.2",
     "pre-commit": "^1.1.3",
