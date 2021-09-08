@@ -32,7 +32,6 @@ test('tcp send', function tcp (done) {
     expect(msg.substr(-1)).to.equal('\n')
     done()
 
-    transport.end()
     socket.close()
     socket.unref()
   })
