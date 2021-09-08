@@ -10,10 +10,9 @@ const through2 = require('through2')
 const nopt = require('nopt')
 const fs = require('fs')
 
-if (require.main !== module) {
-  // used as module
-  module.exports = transport
-} else {
+module.exports = transport
+
+if (require.main === module) {
   // usaed as cli
   cli()
 }
