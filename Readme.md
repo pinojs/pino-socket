@@ -35,7 +35,7 @@ const transport = pino.transport({
 pino(transport)
 ```
 
-All the options are described further down.
+All options are described further below.
 Note that the `echo` option is disabled within this usage.
 
 ## Usage as Pino Legacy Transport
