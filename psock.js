@@ -13,7 +13,7 @@ const fs = require('fs')
 module.exports = transport
 
 if (require.main === module) {
-  // usaed as cli
+  // used as cli
   cli()
 }
 
