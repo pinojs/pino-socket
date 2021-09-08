@@ -10,10 +10,11 @@ const through2 = require('through2')
 const nopt = require('nopt')
 const fs = require('fs')
 
-// TODO quick and dirty
 if (require.main !== module) {
+  // used as module
   module.exports = transport
 } else {
+  // usaed as cli
   cli()
 }
 
