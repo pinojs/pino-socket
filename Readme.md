@@ -18,8 +18,30 @@ $ npm install --production -g pino-socket
 
 [pino]: https://www.npmjs.com/package/pino
 
-## Usage
+## Usage as Pino Transport
 
+You can use this module as a [pino transport](https://getpino.io/#/docs/transports?id=v7-transports) like so:
+
+```js
+const pino = require('pino')
+const transport = pino.transport({
+  target: 'pino-socket',
+  options: {
+    address: '10.10.10.5',
+    port: 5000.
+    mode: 'tcp'
+  }
+})
+pino(transport)
+```
+
+All the options are described further down.
+Note that the `echo` option is disabled within this usage.
+
+## Usage as Pino Legacy Transport
+
+Pino supports a [legacy transport interface](https://getpino.io/#/docs/transports?id=legacy-transports)
+that is still supported by this module.
 Given an application `foo` that logs via [pino][pino], and a system that
 collects logs on port UDP `5000` on IP `10.10.10.5`, you would use `pino-socket`
 like so:
