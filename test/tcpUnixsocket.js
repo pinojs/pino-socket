@@ -2,6 +2,7 @@
 /* eslint-env node, mocha */
 
 const net = require('net')
+const path = require('path')
 const fs = require('fs')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
@@ -29,11 +30,11 @@ function unixSocketTest (done, socketOptions, cb) {
   createUnixSockListener((msg) => cb(msg, socket))
     .then((sock) => {
       socket = sock
-      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      const logit = spawn('node', [path.join(__dirname, '/fixtures/logit.js')])
       logit.unref()
       const psock = spawn(
         'node',
-        [`${__dirname}/../psock.js`, '-u', unixSocketPath, '-m', 'tcp']
+        [path.join(__dirname, '/../psock.js'), '-u', unixSocketPath, '-m', 'tcp']
       )
       psock.unref()
       logit.stdout.on('data', (data) => psock.stdin.write(data))

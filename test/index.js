@@ -3,6 +3,7 @@
 
 const dgram = require('dgram')
 const net = require('net')
+const path = require('path')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
@@ -38,11 +39,11 @@ function tcpTest (done, socketOptions, cb) {
       socket = sock
       const address = socket.address().address
       const port = socket.address().port
-      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      const logit = spawn('node', [path.join(__dirname, '/fixtures/logit.js')])
       logit.unref()
       const psock = spawn(
         'node',
-        [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp'].concat(socketOptions)
+        [path.join(__dirname, '/../psock.js'), '-a', address, '-p', port, '-m', 'tcp'].concat(socketOptions)
       )
       psock.unref()
       logit.stdout.on('data', (data) => psock.stdin.write(data))
@@ -59,10 +60,10 @@ function udpTest (done, socketOptions, cb) {
       socket = sock
       const address = socket.address().address
       const port = socket.address().port
-      const logit = spawn('node', [`${__dirname}/fixtures/logit.js`])
+      const logit = spawn('node', [path.join(__dirname, '/fixtures/logit.js')])
       const psock = spawn(
         'node',
-        [`${__dirname}/../psock.js`, '-a', address, '-p', port].concat(socketOptions)
+        [path.join(__dirname, '/../psock.js'), '-a', address, '-p', port].concat(socketOptions)
       )
 
       logit.stdout.on('data', (data) => psock.stdin.write(data))
