@@ -2,6 +2,7 @@
 /* eslint-env node, mocha */
 
 const net = require('net')
+const path = require('path')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
@@ -23,7 +24,7 @@ test('loads settings from a file (switches take precedence)', function (done) {
     const port = server.address().port
     const psock = spawn(
       'node',
-      [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-s', `${__dirname}/fixtures/config.json`]
+      [path.join(__dirname, '/../psock.js'), '-a', address, '-p', port, '-s', path.join(__dirname, '/fixtures/config.json')]
     )
     psock.unref()
     setTimeout(() => {

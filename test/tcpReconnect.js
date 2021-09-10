@@ -2,6 +2,7 @@
 /* eslint-env node, mocha */
 
 const net = require('net')
+const path = require('path')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
 
@@ -67,7 +68,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
     port = details.port
     psock = spawn(
       'node',
-      [`${__dirname}/../psock.js`, '-a', address, '-p', port, '-m', 'tcp', '-r', '-t', 2]
+      [path.join(__dirname, '/../psock.js'), '-a', address, '-p', port, '-m', 'tcp', '-r', '-t', 2]
     )
     // for debugging
     // psock.stdout.pipe(process.stdout)
