@@ -1,36 +1,10 @@
 'use strict'
 /* eslint-env node, mocha */
 
-const dgram = require('dgram')
-const net = require('net')
 const path = require('path')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
-
-function createTcpListener (msgHandler) {
-  return new Promise((resolve, reject) => {
-    const socket = net.createServer((connection) => {
-      connection.on('data', (data) => {
-        msgHandler(data.toString())
-      })
-    })
-    socket.listen(0, '127.0.0.1', (err) => {
-      if (err) {
-        return reject(err)
-      }
-      return resolve(socket)
-    })
-  })
-}
-
-function createUdpListener (msgHandler) {
-  return new Promise((resolve) => {
-    const socket = dgram.createSocket('udp4')
-    socket.on('message', (msg) => msgHandler(msg.toString()))
-    socket.on('error', (err) => console.log(`socket error: ${err.message}`))
-    socket.bind({ address: '127.0.0.1' }, () => resolve(socket))
-  })
-}
+const { createTcpListener, createUdpListener } = require('./utils')
 
 function tcpTest (done, socketOptions, cb) {
   let socket

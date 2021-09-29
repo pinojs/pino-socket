@@ -2,28 +2,10 @@
 /* eslint-env node, mocha */
 
 const pino = require('pino')
-const net = require('net')
 const { expect } = require('chai')
-
-function createTcpListener (msgHandler) {
-  return new Promise((resolve, reject) => {
-    const socket = net.createServer((connection) => {
-      connection.on('data', (data) => {
-        msgHandler(data.toString())
-      })
-    })
-    socket.listen(0, '127.0.0.1', (err) => {
-      if (err) {
-        return reject(err)
-      }
-      return resolve(socket)
-    })
-  })
-}
+const { createTcpListener, createUdpListener } = require('./utils')
 
 test('tcp send', function tcp (done) {
-  this.timeout(50000)
-
   let socket
   let transport
 
@@ -52,6 +34,39 @@ test('tcp send', function tcp (done) {
       const log = pino(transport)
 
       log.info('hello TCP world')
+    })
+    .catch(done)
+})
+
+test('udp send', function tcp (done) {
+  let server
+  let transport
+
+  createUdpListener((msg) => {
+    expect(msg).to.contain('"msg":"hello UDP world"')
+    expect(msg.substr(-1)).to.equal('\n')
+    done()
+
+    server.close()
+    server.unref()
+  })
+    .then((serverSocket) => {
+      server = serverSocket
+      const address = server.address().address
+      const port = server.address().port
+
+      transport = pino.transport({
+        target: '../psock.js',
+        level: 'info',
+        options: {
+          mode: 'udp',
+          address,
+          port
+        }
+      })
+      const log = pino(transport)
+
+      log.info('hello UDP world')
     })
     .catch(done)
 })
