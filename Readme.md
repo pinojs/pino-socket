@@ -59,6 +59,7 @@ $ node foo | pino-socket -u /tmp/unix.sock
 + `--settings` (`-s`): read settings from a JSON file (switches take precedence)
 + `--unixsocket` (`-u`): the unix socket path for the destination. Default: ``.
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
++ `--secure` (`-tls`): enable secure (TLS) connection for TCP (only works with `--mode=tcp`).
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
 + `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off
