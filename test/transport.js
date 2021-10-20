@@ -3,7 +3,7 @@
 
 const pino = require('pino')
 const { expect } = require('chai')
-const { createTcpListener, createUdpListener } = require('./utils')
+const { createSecureTcpListener, createTcpListener, createUdpListener } = require('./utils')
 
 test('tcp send', function tcp (done) {
   let socket
@@ -34,6 +34,42 @@ test('tcp send', function tcp (done) {
       const log = pino(transport)
 
       log.info('hello TCP world')
+    })
+    .catch(done)
+})
+
+test('tcp secure send', function tcp (done) {
+  let socket
+  let transport
+
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+
+  createSecureTcpListener((msg) => {
+    expect(msg).to.contain('"msg":"hello secure TCP world"')
+    expect(msg.substr(-1)).to.equal('\n')
+    done()
+
+    socket.close()
+    socket.unref()
+  })
+    .then((serverSocket) => {
+      socket = serverSocket
+      const { address, port } = socket.address()
+
+      transport = pino.transport({
+        target: '../psock.js',
+        level: 'info',
+        options: {
+          secure: true,
+          mode: 'tcp',
+          address,
+          port
+        }
+      })
+
+      const log = pino(transport)
+
+      log.info('hello secure TCP world')
     })
     .catch(done)
 })
