@@ -33,9 +33,7 @@ function createSecureTcpListener (msgHandler) {
   return new Promise((resolve, reject) => {
     const socket = tls.createServer({
       key: fs.readFileSync(path.resolve(__dirname, 'certs/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'certs/server.crt')),
-      ca: fs.readFileSync(path.resolve(__dirname, 'certs/ca.crt')),
-      rejectUnauthorized: false
+      cert: fs.readFileSync(path.resolve(__dirname, 'certs/server.crt'))
     }, (connection) => {
       connection.on('data', (data) => {
         msgHandler(data.toString())
