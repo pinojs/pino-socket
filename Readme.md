@@ -62,7 +62,7 @@ $ node foo | pino-socket -u /tmp/unix.sock
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--secure` (`-tls`): enable secure (TLS) connection for TCP (only works with `--mode=tcp`).
-+ `--unauth` (`-una`): allow connection to server with self-signed certificates (only works with `--secure`).
++ `--noverify` (`-nv`): allow connection to server with self-signed certificates (only works with `--secure`).
 + `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off
 + `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts
   before giving up. Default: infinite
@@ -82,7 +82,7 @@ a hash of settings for the the application. A full settings file is:
   "port": 514,
   "mode": "tcp",
   "secure": false,
-  "unauth": false,
+  "noverify": false,
   "reconnect": true,
   "reconnectTries": 20,
   "echo": false

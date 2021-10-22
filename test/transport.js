@@ -58,7 +58,7 @@ test('tcp secure send', function tcp (done) {
         level: 'info',
         options: {
           secure: true,
-          unauth: true,
+          noverify: true,
           mode: 'tcp',
           address,
           port
