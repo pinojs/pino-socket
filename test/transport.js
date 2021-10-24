@@ -37,7 +37,7 @@ test('tcp send', function tcp (done) {
     .catch(done)
 })
 
-test('tcp secure send', function tcp (done) {
+test('tcp secure send', function tcpSecure (done) {
   let socket
   let transport
 
@@ -72,7 +72,7 @@ test('tcp secure send', function tcp (done) {
     .catch(done)
 })
 
-test('udp send', function tcp (done) {
+test('udp send', function udp (done) {
   let server
   let transport
 
@@ -100,6 +100,44 @@ test('udp send', function tcp (done) {
       const log = pino(transport)
 
       log.info('hello UDP world')
+    })
+    .catch(done)
+})
+
+test('udp secure fail', function updSecure (done) {
+  let server
+
+  process.removeAllListeners('uncaughtException')
+
+  process.once('uncaughtException', (err) => {
+    expect(err.message).equal('Secure connection for udp protocol is not supported')
+    done()
+  })
+
+  createUdpListener((msg) => {
+    server.close()
+    server.unref()
+
+    throw new Error('Secure udp is not supported')
+  })
+    .then((serverSocket) => {
+      server = serverSocket
+      const { address, port } = server.address()
+
+      const transport = pino.transport({
+        target: '../psock.js',
+        level: 'info',
+        options: {
+          secure: true,
+          mode: 'udp',
+          address,
+          port
+        }
+      })
+
+      const log = pino(transport)
+
+      log.info('hello secure UDP world')
     })
     .catch(done)
 })
