@@ -1,7 +1,10 @@
 'use strict'
 
 const dgram = require('dgram')
+const path = require('path')
 const net = require('net')
+const tls = require('tls')
+const fs = require('fs')
 
 function createUdpListener (msgHandler) {
   return new Promise((resolve) => {
@@ -19,16 +22,32 @@ function createTcpListener (msgHandler) {
         msgHandler(data.toString())
       })
     })
+
     socket.listen(0, '127.0.0.1', (err) => {
-      if (err) {
-        return reject(err)
-      }
-      return resolve(socket)
+      err ? reject(err) : resolve(socket)
+    })
+  })
+}
+
+function createSecureTcpListener (msgHandler) {
+  return new Promise((resolve, reject) => {
+    const socket = tls.createServer({
+      key: fs.readFileSync(path.resolve(__dirname, 'certs/server.key')),
+      cert: fs.readFileSync(path.resolve(__dirname, 'certs/server.crt'))
+    }, (connection) => {
+      connection.on('data', (data) => {
+        msgHandler(data.toString())
+      })
+    })
+
+    socket.listen(0, '127.0.0.1', (err) => {
+      err ? reject(err) : resolve(socket)
     })
   })
 }
 
 module.exports = {
+  createSecureTcpListener,
   createTcpListener,
   createUdpListener
 }

@@ -21,8 +21,10 @@ function cli () {
   const longOpts = {
     unixsocket: String,
     address: String,
-    mode: ['tcp', 'udp'],
     port: Number,
+    mode: ['tcp', 'udp'],
+    secure: Boolean,
+    noverify: Boolean,
     reconnect: Boolean,
     reconnectTries: Number,
     echo: Boolean,
@@ -33,8 +35,10 @@ function cli () {
   const shortOpts = {
     u: '--unixsocket',
     a: '--address',
-    m: '--mode',
     p: '--port',
+    m: '--mode',
+    tls: '--secure',
+    nv: '--noverify',
     r: '--reconnect',
     t: '--reconnectTries',
     e: '--echo',
