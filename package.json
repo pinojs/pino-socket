@@ -12,7 +12,7 @@
     "cov": "nyc mocha --ui qunit -R dot test"
   },
   "bin": {
-    "pino-socket": "./app.js"
+    "pino-socket": "./psock.js"
   },
   "keywords": [
     "pino",
