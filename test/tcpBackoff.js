@@ -11,11 +11,11 @@ test('tcp backoff', function testTcpBackoff (done) {
     address: '127.0.0.1',
     port: 0,
     reconnect: true,
-    backoffstrategy: new ExponentialStrategy({
+    backoffStrategy: new ExponentialStrategy({
       initialDelay: 10,
       factor: 10 // 10, 100, 1000, 2000...
     }),
-    onsocketclose: () => {
+    onSocketClose: () => {
       retryCount++
     }
   })

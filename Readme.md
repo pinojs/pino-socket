@@ -46,8 +46,8 @@ pino(transport)
 | `noverify`        | Allow connection to server with self-signed certificates. Default: false.                                                                                 |
 | `reconnect`       | Enable reconnecting to dropped TCP destinations. Default: false.                                                                                          |
 | `reconnectTries`  | Number of times to attempt reconnection before giving up. Default: `Infinity`                                                                             |
-| `onsocketclose`   | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`          |
-| `backoffstrategy` | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`. |
+| `onSocketClose`   | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`          |
+| `backoffStrategy` | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`. |
 
 ## Usage as Pino Legacy Transport
 
