@@ -35,8 +35,8 @@ test('recovery', function (done) {
   function sendData () {
     setInterval(() => {
       counter++
-      tcpConnection.write(`log${counter}\n`, 'utf8')
-    }, 50)
+      tcpConnection.write(`log${counter}\n`, 'utf8', () => { /* ignore */ })
+    }, 100)
   }
 
   function startSecondServer () {
@@ -51,18 +51,22 @@ test('recovery', function (done) {
               closing = true
               setTimeout(() => {
                 secondServer.close(() => {
-                  const logs = received
-                    .map(it => it.data.toString('utf8'))
-                    .reduce((previousValue, currentValue) => previousValue + currentValue)
-                    .split('\n')
-                    .filter(it => it !== '')
-                  const logNumbers = logs.map(it => parseInt(it.replace('log', '')))
-                  expect(logs.length).to.eq(logNumbers[logNumbers.length - 1])
-                  // make sure that no number is missing
-                  expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
-                  done()
+                  try {
+                    const logs = received
+                      .map(it => it.data.toString('utf8'))
+                      .reduce((previousValue, currentValue) => previousValue + currentValue)
+                      .split('\n')
+                      .filter(it => it !== '')
+                    console.log(logs)
+                    const logNumbers = logs.map(it => parseInt(it.replace('log', '')))
+                    expect(logs.length).to.eq(logNumbers[logNumbers.length - 1])
+                    // make sure that no number is missing
+                    expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
+                  } finally {
+                    done()
+                  }
                 })
-              }, 200) // wait recovery a bit to make sure that enqueued data have been recovered
+              }, 500) // wait recovery a bit to make sure that enqueued data have been recovered
             }
             break
         }
