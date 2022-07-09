@@ -23,5 +23,5 @@ test('tcp backoff', function testTcpBackoff (done) {
     tcpConnection.end('', 'utf8', () => done())
     // initial, 10, 100
     expect(retryCount).to.equal(3)
-  }, 200)
+  }, 500)
 })
