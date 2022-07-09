@@ -4,8 +4,6 @@
 const Queue = require('../lib/Queue')
 const { expect } = require('chai')
 
-suite('Queue')
-
 test('#enqueue elements', function () {
   const q = new Queue()
   q.enqueue('1')
