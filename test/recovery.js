@@ -29,7 +29,8 @@ test('recovery', function (done) {
   let port
   let tcpConnection
   let counter = 0
-  let closing = false
+  let firstServerClosing = false
+  let secondServerClosing = false
   const received = []
 
   function sendData () {
@@ -47,26 +48,23 @@ test('recovery', function (done) {
         switch (msg.action) {
           case 'data':
             received.push(msg)
-            if (!closing) {
-              closing = true
-              setTimeout(() => {
-                secondServer.close(() => {
-                  try {
-                    const logs = received
-                      .map(it => it.data.toString('utf8'))
-                      .reduce((previousValue, currentValue) => previousValue + currentValue)
-                      .split('\n')
-                      .filter(it => it !== '')
-                    console.log(logs)
-                    const logNumbers = logs.map(it => parseInt(it.replace('log', '')))
-                    expect(logs.length).to.eq(logNumbers[logNumbers.length - 1])
-                    // make sure that no number is missing
-                    expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
-                  } finally {
-                    done()
-                  }
-                })
-              }, 500) // wait recovery a bit to make sure that enqueued data have been recovered
+            if (received.length > 5 && !secondServerClosing) {
+              secondServerClosing = true
+              secondServer.close(() => {
+                try {
+                  const logs = received
+                    .map(it => it.data.toString('utf8'))
+                    .reduce((previousValue, currentValue) => previousValue + currentValue)
+                    .split('\n')
+                    .filter(it => it !== '')
+                  const logNumbers = logs.map(it => parseInt(it.replace('log', '')))
+                  expect(logs.length).to.eq(logNumbers[logNumbers.length - 1])
+                  // make sure that no number is missing
+                  expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
+                } finally {
+                  done()
+                }
+              })
             }
             break
         }
@@ -90,11 +88,15 @@ test('recovery', function (done) {
           break
         case 'data':
           received.push(msg)
-          firstServer.close(() => {
-            // first server is closed
-            setTimeout(startSecondServer, 50)
-          })
-          break
+          // receive one message and close the server
+          if (!firstServerClosing) {
+            firstServerClosing = true
+            firstServer.close(() => {
+              // start the second server with a delay to purposely miss writes (which are executed every 100ms)
+              setTimeout(startSecondServer, 150)
+            })
+            break
+          }
       }
     }
   })
