@@ -27,15 +27,27 @@ const transport = pino.transport({
   target: 'pino-socket',
   options: {
     address: '10.10.10.5',
-    port: 5000.
+    port: 5000,
     mode: 'tcp'
   }
 })
 pino(transport)
 ```
 
-All options are described further below.
-Note that the `echo` option is disabled within this usage.
+### Options
+
+| Name              | Description                                                                                                                                               |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `unixsocket`      | The unix socket path for the destination. Default: `&#8203;`.                                                                                             |
+| `address`         | The host address to connect to. Default: `127.0.0.1`.                                                                                                     |
+| `port`            | The host port to connect to. Default: `514`.                                                                                                              |
+| `mode`            | Either `tcp` or `udp`. Default: `udp`.                                                                                                                    |
+| `secure`          | Enable secure (TLS) connection. Default: false.                                                                                                           |
+| `noverify`        | Allow connection to server with self-signed certificates. Default: false.                                                                                 |
+| `reconnect`       | Enable reconnecting to dropped TCP destinations. Default: false.                                                                                          |
+| `reconnectTries`  | Number of times to attempt reconnection before giving up. Default: `Infinity`                                                                             |
+| `onSocketClose`   | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`          |
+| `backoffStrategy` | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`. |
 
 ## Usage as Pino Legacy Transport
 
@@ -53,27 +65,26 @@ OR
 $ node foo | pino-socket -u /tmp/unix.sock
 ```
 
-## Options
+### CLI Options
 
-+ `--settings` (`-s`): read settings from a JSON file (switches take precedence)
-+ `--unixsocket` (`-u`): the unix socket path for the destination. Default: ``.
++ `--settings` (`-s`): read settings from a JSON file (switches take precedence).
++ `--unixsocket` (`-u`): the unix socket path for the destination. Default: `&#8203;`.
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.
 + `--secure` (`-tls`): enable secure (TLS) connection for TCP (only works with `--mode=tcp`).
 + `--noverify` (`-nv`): allow connection to server with self-signed certificates (only works with `--secure`).
-+ `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off
-+ `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts
-  before giving up. Default: infinite
++ `--reconnect` (`-r`): enable reconnecting to dropped TCP destinations. Default: off.
++ `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts before giving up. Default: infinite.
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
 
-### Settings JSON File
+#### Settings JSON File
 
 The `--settings` switch can be used to specify a JSON file that contains
-a hash of settings for the the application. A full settings file is:
+a hash of settings for the application. A full settings file is:
 
 ```json
 {
