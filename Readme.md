@@ -49,8 +49,16 @@ pino(transport)
 | `onSocketClose`                | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`.                                                                             |
 | `backoffStrategy`              | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`.                                                                     |
 | `recovery`                     | Enable a recovery mode when the TCP connection is lost which store data in a memory queue (FIFO) until the queue max size is reached or the TCP connection is restored. Default: `false`.                                     |
-| `recoveryQueueMaxSize`         | The maximum size of items added to the queue. When reached, oldest items "First In" will be evicted to stay below this size. Default: `1024`.                                                                       |
+| `recoveryQueueMaxSize`         | The maximum size of items added to the queue. When reached, oldest items "First In" will be evicted to stay below this size. Default: `1024`.                                                                                 |
 | `recoveryQueueSizeCalculation` | Function used to calculate the size of stored items. The item is passed as the first argument and contains a `data` (Buffer) and `encoding` (String) attribute. Default: `(item) => item.data.length + item.encoding.length`. |
+
+### Events
+
+| Name    | Description                                                                                                                                                                                                                                                                                          |
+|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `open`  | Emitted when the TCP or UDP connection is established. The listener callback function is invoked with the socket address: ``transport.on('open', (addressInfo) => console.log(`connected to: ${addressInfo.address}:${addressInfo.port} @ ${addressInfo.family}`)``                                  |
+| `error` | Emitted when an error occurs on the TCP or UDP socket. The listener callback function is invoked with an error, the root cause and the socket address: ``transport.on('error', (err) => console.error(`an error occurred: ${err}`)``                                                                 |
+| `close` | Emitted after the TCP or UDP socket is closed. The listener callback function is invoked with a boolean which says if the TCP socket was closed due to a transmission error: ``transport.on('close', (hadError) => console.log(`transport closed ${hadError ? 'with error(s)' : 'without error'}`)`` |
 
 ## Usage as Pino Legacy Transport
 
@@ -81,6 +89,8 @@ $ node foo | pino-socket -u /tmp/unix.sock
 + `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts before giving up. Default: infinite.
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
++ `--recovery`: enable recovery mode for TCP (only works with `--mode=tcp`). Default: off.
++ `--recovery-queue-max-size <n>`: maximum size of items added to the recovery queue. Default: 1024
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
 

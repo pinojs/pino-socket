@@ -11,13 +11,14 @@
 
   [36m[1mFlags[22m[39m
   [0m-h  | --help              Display Help
-  -v  | --version           display Version
-  -s  | --settings          read settings from a JSON file (switches take precedence)
-  -a  | --address           the address for the destination socket; default: 127.0.0.1
-  -m  | --mode              the protocol, either 'udp' or 'tcp'; default: 'udp'
-  -p  | --port              the port on the destination socket; default: '514'
-  -u  | --unixsocket        the path of unix socket, default: ''
-  -r  | --reconnect         enable tcp mode reconnecting
-  -t  | --reconnectTries    number of reconnect attempts to make; default 'Inifinity'
-  -ne | --no-echo           disable echoing received messages to stdout
-
+  -v  | --version                   display Version
+  -s  | --settings                  read settings from a JSON file (switches take precedence)
+  -a  | --address                   the address for the destination socket; default: 127.0.0.1
+  -m  | --mode                      the protocol, either 'udp' or 'tcp'; default: 'udp'
+  -p  | --port                      the port on the destination socket; default: '514'
+  -u  | --unixsocket                the path of unix socket; default: ''
+  -r  | --reconnect                 enable tcp mode reconnecting
+  -t  | --reconnectTries            number of reconnect attempts to make; default: 'Inifinity'
+  -ne | --no-echo                   disable echoing received messages to stdout
+      | --recovery                  enable recovery mode
+      | --recovery-queue-max-size   maximum size of items added to the recovery queue; default: 1024
