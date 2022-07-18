@@ -77,10 +77,11 @@ function cli () {
   let connection
   if (options.mode === 'tcp') {
     connection = tcpConnectionFactory(options)
-    connection.on('error', (err) => console.error(err.message))
   } else {
     connection = udpConnectionFactory(options)
   }
+
+  connection.on('error', (err) => console.error(err.message))
 
   function shutdown () {
     try {
