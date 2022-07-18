@@ -4,7 +4,7 @@
 const Queue = require('../lib/Queue')
 const { expect } = require('chai')
 
-test('#enqueue elements', function () {
+test('#enqueue items', function () {
   const q = new Queue()
   q.enqueue('1')
   q.enqueue('2')
@@ -80,12 +80,12 @@ test('#enqueue with max size should evict until the total size is below max size
   expect(q.dequeue()).to.eq('ghi')
 })
 
-test('#enqueue an element that exceeds max size', function (done) {
+test('#enqueue an item that exceeds max size', function (done) {
   const q = new Queue({
     maxSize: 2
   })
   process.on('warning', (event) => {
-    expect(event.message).to.eq('Unable to enqueue element because element size 3 is greater than maxSize 2')
+    expect(event.message).to.eq('unable to enqueue item because item size 3 is greater than maxSize 2')
     done()
   })
   q.enqueue('abc') // should emit a warning
