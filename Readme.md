@@ -54,11 +54,11 @@ pino(transport)
 
 ### Events
 
-| Name    | Description                                                                                                                                                                                                                                                                                          |
-|---------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `open`  | Emitted when the TCP or UDP connection is established. The listener callback function is invoked with the socket address: ``transport.on('open', (addressInfo) => console.log(`connected to: ${addressInfo.address}:${addressInfo.port} @ ${addressInfo.family}`)``                                  |
-| `error` | Emitted when an error occurs on the TCP or UDP socket. The listener callback function is invoked with an error, the root cause and the socket address: ``transport.on('error', (err) => console.error(`an error occurred: ${err}`)``                                                                 |
-| `close` | Emitted after the TCP or UDP socket is closed. The listener callback function is invoked with a boolean which says if the TCP socket was closed due to a transmission error: ``transport.on('close', (hadError) => console.log(`transport closed ${hadError ? 'with error(s)' : 'without error'}`)`` |
+| Name    | Callback Signature               | Description                                                                                                                                          |
+|---------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `open`  | `(address: AddressInfo) => void` | Emitted when the TCP or UDP connection is established.                                                                                               |
+| `error` | `(error: Error) => void`         | Emitted when an error occurs on the TCP or UDP socket.                                                                                               |
+| `close` | `(hadError: Boolean) => void`    | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
 
 ## Usage as Pino Legacy Transport
 
