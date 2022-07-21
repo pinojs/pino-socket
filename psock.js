@@ -31,7 +31,9 @@ function cli () {
     echo: Boolean,
     help: Boolean,
     version: Boolean,
-    settings: String
+    settings: String,
+    recovery: Boolean,
+    'recovery-queue-max-size': Number
   }
   const shortOpts = {
     u: '--unixsocket',
@@ -78,6 +80,8 @@ function cli () {
   } else {
     connection = udpConnectionFactory(options)
   }
+
+  connection.on('error', (err) => console.error(err.message))
 
   function shutdown () {
     try {

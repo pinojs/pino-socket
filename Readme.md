@@ -36,18 +36,29 @@ pino(transport)
 
 ### Options
 
-| Name              | Description                                                                                                                                               |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `unixsocket`      | The unix socket path for the destination. Default: `&#8203;`.                                                                                             |
-| `address`         | The host address to connect to. Default: `127.0.0.1`.                                                                                                     |
-| `port`            | The host port to connect to. Default: `514`.                                                                                                              |
-| `mode`            | Either `tcp` or `udp`. Default: `udp`.                                                                                                                    |
-| `secure`          | Enable secure (TLS) connection. Default: false.                                                                                                           |
-| `noverify`        | Allow connection to server with self-signed certificates. Default: false.                                                                                 |
-| `reconnect`       | Enable reconnecting to dropped TCP destinations. Default: false.                                                                                          |
-| `reconnectTries`  | Number of times to attempt reconnection before giving up. Default: `Infinity`                                                                             |
-| `onSocketClose`   | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`          |
-| `backoffStrategy` | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`. |
+| Name                           | Description                                                                                                                                                                                                                   |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `address`                      | The host address to connect to. Default: `127.0.0.1`.                                                                                                                                                                         |
+| `port`                         | The host port to connect to. Default: `514`.                                                                                                                                                                                  |
+| `unixsocket`                   | The unix socket path for the destination. Default: `&#8203;`.                                                                                                                                                                 |
+| `mode`                         | Either `tcp` or `udp`. Default: `udp`.                                                                                                                                                                                        |
+| `secure`                       | Enable secure (TLS) connection. Default: false.                                                                                                                                                                               |
+| `noverify`                     | Allow connection to server with self-signed certificates. Default: false.                                                                                                                                                     |
+| `reconnect`                    | Enable reconnecting to dropped TCP destinations. Default: false.                                                                                                                                                              |
+| `reconnectTries`               | Number of times to attempt reconnection before giving up. Default: `Infinity`.                                                                                                                                                |
+| `onSocketClose`                | The callback when the socket is closed on TCP destinations. Default: `(socketError) => socketError && process.stderr.write(socketError.message)`.                                                                             |
+| `backoffStrategy`              | The backoff strategy to use on TCP destinations. The backoff strategy must implement the `BackoffStrategy` interface. Default: `new FibonacciStrategy()`.                                                                     |
+| `recovery`                     | Enable a recovery mode when the TCP connection is lost which store data in a memory queue (FIFO) until the queue max size is reached or the TCP connection is restored. Default: `false`.                                     |
+| `recoveryQueueMaxSize`         | The maximum size of items added to the queue. When reached, oldest items "First In" will be evicted to stay below this size. Default: `1024`.                                                                                 |
+| `recoveryQueueSizeCalculation` | Function used to calculate the size of stored items. The item is passed as the first argument and contains a `data` (Buffer) and `encoding` (String) attribute. Default: `(item) => item.data.length + item.encoding.length`. |
+
+### Events
+
+| Name    | Callback Signature               | Description                                                                                                                                          |
+|---------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `open`  | `(address: AddressInfo) => void` | Emitted when the TCP or UDP connection is established.                                                                                               |
+| `error` | `(error: Error) => void`         | Emitted when an error occurs on the TCP or UDP socket.                                                                                               |
+| `close` | `(hadError: Boolean) => void`    | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
 
 ## Usage as Pino Legacy Transport
 
@@ -78,6 +89,8 @@ $ node foo | pino-socket -u /tmp/unix.sock
 + `--reconnectTries <n>` (`-t <n>`): set number (`<n>`) of reconnect attempts before giving up. Default: infinite.
 + `--echo` (`-e`): echo the received messages to stdout. Default: enabled.
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
++ `--recovery`: enable recovery mode for TCP (only works with `--mode=tcp`). Default: off.
++ `--recovery-queue-max-size <n>`: maximum size of items (`<n>`) added to the recovery queue. Default: 1024.
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
 

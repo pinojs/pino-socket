@@ -26,4 +26,5 @@ test('tcp backoff', function testTcpBackoff (done) {
       }
     }
   })
+  tcpConnection.on('error', () => { /* ignore */ })
 })
