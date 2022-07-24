@@ -5,6 +5,9 @@ const net = require('net')
 const path = require('path')
 const spawn = require('child_process').spawn
 const expect = require('chai').expect
+const getPort = require('get-port')
+
+const TcpConnection = require('../lib/TcpConnection')
 
 function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
@@ -84,4 +87,47 @@ test('tcp reconnect', function testTcpReconnect (done) {
     100
     )
   }
+})
+
+test('tcp reconnect after initial failure', async function testTcpReconnectAfterInitialFailure () {
+  let failureCount = 0
+  let counter = 0
+  function sendData () {
+    setInterval(() => {
+      counter++
+      tcpConnection.write(`log${counter}\n`, 'utf8', () => { /* ignore */ })
+    }, 100)
+  }
+  const port = await getPort()
+  const address = '127.0.0.1'
+  const tcpConnection = TcpConnection({
+    address,
+    port,
+    reconnect: true
+  })
+  tcpConnection.on('error', () => { failureCount++ })
+  sendData()
+  const received = await new Promise((resolve, reject) => {
+    let closing = false
+    const received = []
+    const server = startServer({
+      address,
+      port,
+      next: (msg) => {
+        switch (msg.action) {
+          case 'data':
+            received.push(msg)
+            if (!closing) {
+              closing = true
+              server.close(() => {
+                resolve(received)
+              })
+            }
+        }
+      }
+    })
+  })
+  expect(failureCount).to.gte(counter)
+  expect(received.length).to.eq(1)
+  expect(received[0].data.toString('utf8')).to.eq(`log${counter}\n`)
 })
