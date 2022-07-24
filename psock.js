@@ -81,7 +81,7 @@ function cli () {
     connection = udpConnectionFactory(options)
   }
 
-  connection.on('error', (err) => console.error(err.message))
+  connection.on('socketError', (err) => console.error(err.message))
 
   function shutdown () {
     try {
