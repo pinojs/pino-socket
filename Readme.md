@@ -54,11 +54,31 @@ pino(transport)
 
 ### Events
 
-| Name    | Callback Signature               | Description                                                                                                                                          |
-|---------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `open`  | `(address: AddressInfo) => void` | Emitted when the TCP or UDP connection is established.                                                                                               |
-| `error` | `(error: Error) => void`         | Emitted when an error occurs on the TCP or UDP socket.                                                                                               |
-| `close` | `(hadError: Boolean) => void`    | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
+| Name          | Callback Signature               | Description                                                                                                                                          |
+|---------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `open`        | `(address: AddressInfo) => void` | Emitted when the TCP or UDP connection is established.                                                                                               |
+| `socketError` | `(error: Error) => void`         | Emitted when an error occurs on the TCP or UDP socket. The socket won't be closed.                                                                   |
+| `close`       | `(hadError: Boolean) => void`    | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
+
+**IMPORTANT:** In version prior to 6.0, an `error` event was emitted on the writable stream when an error occurs on the TCP or UDP socket.
+In other words, it was not possible to write data to the writable stream after an error occurs on the TCP or UDP socket.
+If you want to restore the previous behavior you can do:
+
+```js
+transport.on('socketError', () => {
+  transport.end()
+})
+```
+
+Alternatively, you can propagate the socket error using:
+
+```js
+transport.on('socketError', (err) => {
+  transport.emit('error', err)
+})
+```
+
+In this case, make sure that you are listening to the `error` event otherwise you will get an `Uncaught Error`.
 
 ## Usage as Pino Legacy Transport
 

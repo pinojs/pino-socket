@@ -84,7 +84,6 @@ test('recovery', function (done) {
             reconnect: true,
             recovery: true
           })
-          tcpConnection.on('error', () => { /* ignore */ })
           sendData()
           break
         case 'data':
