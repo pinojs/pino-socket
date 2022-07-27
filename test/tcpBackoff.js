@@ -15,15 +15,15 @@ test('tcp backoff', function testTcpBackoff (done) {
     address: '127.0.0.1',
     port: 0,
     reconnect: true,
-    backoffStrategy: exponentialStrategy,
-    onSocketClose: () => {
-      closeCount++
-      if (closeCount === 3) {
-        const nextBackoffDelay = exponentialStrategy.next()
-        // initial, 10, 100... next delay should be 1000
-        expect(nextBackoffDelay).to.eq(1000)
-        tcpConnection.end(() => done())
-      }
+    backoffStrategy: exponentialStrategy
+  })
+  tcpConnection.on('socketClose', () => {
+    closeCount++
+    if (closeCount === 3) {
+      const nextBackoffDelay = exponentialStrategy.next()
+      // initial, 10, 100... next delay should be 1000
+      expect(nextBackoffDelay).to.eq(1000)
+      tcpConnection.end(() => done())
     }
   })
 })
