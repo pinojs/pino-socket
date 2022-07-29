@@ -19,6 +19,8 @@ test('tcp retry fail', function testTcpRetryFail (done) {
   tcpConnection.on('reconnectFailure', (lastError) => {
     expect(socketErrorCount).to.eq(3)
     expect(lastError).to.be.an('error')
-    done()
+    tcpConnection.end(() => {
+      done()
+    })
   })
 })

@@ -133,4 +133,37 @@ test('tcp reconnect after initial failure', async function testTcpReconnectAfter
   expect(failureCount).to.gte(counter)
   expect(received.length).to.eq(1)
   expect(received[0].data.toString('utf8')).to.eq(`log${counter}\n`)
+  tcpConnection.end()
+})
+
+test('tcp no reconnect when socket is gracefully closed', function testTcpNoReconnectSocketGracefullyClosed (done) {
+  let msgCount = 0
+  let tcpConnection
+  const server = startServer({ next })
+  function next (msg) {
+    switch (msg.action) {
+      case 'started':
+        connect(msg.address, msg.port)
+        break
+      case 'data':
+        msgCount += 1
+        // gracefully close the socket, it should not reconnect
+        tcpConnection._socket.destroy()
+    }
+  }
+  function connect (address, port) {
+    tcpConnection = TcpConnection({
+      address,
+      port,
+      reconnect: true
+    })
+    tcpConnection.write('data', 'utf8', () => { /* ignore */ })
+    tcpConnection.on('close', () => {
+      expect(msgCount).to.eq(1)
+      // tcp connection should be closed!
+      server.close(() => {
+        done()
+      })
+    })
+  }
 })
