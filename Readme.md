@@ -54,11 +54,12 @@ pino(transport)
 
 ### Events
 
-| Name          | Callback Signature               | Description                                                                                                                                          |
-|---------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `open`        | `(address: AddressInfo) => void` | Emitted when the TCP or UDP connection is established.                                                                                               |
-| `socketError` | `(error: Error) => void`         | Emitted when an error occurs on the TCP or UDP socket. The socket won't be closed.                                                                   |
-| `close`       | `(hadError: Boolean) => void`    | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
+| Name               | Callback Signature                      | Description                                                                                                                                          |
+|--------------------|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `open`             | `(address: AddressInfo) => void`        | Emitted when the TCP or UDP connection is established.                                                                                               |
+| `socketError`      | `(error: Error) => void`                | Emitted when an error occurs on the TCP or UDP socket. The socket won't be closed.                                                                   |
+| `close`            | `(hadError: Boolean) => void`           | Emitted after the TCP or UDP socket is closed. The argument `hadError` is a boolean which says if the socket was closed due to a transmission error. |
+| `reconnectFailure` | `(error: Error&#124;undefined) => void` | Emitted when the maximum number of backoffs (i.e., reconnect tries) is reached on a TCP connection.                                                  |
 
 **IMPORTANT:** In version prior to 6.0, an `error` event was emitted on the writable stream when an error occurs on the TCP or UDP socket.
 In other words, it was not possible to write data to the writable stream after an error occurs on the TCP or UDP socket.

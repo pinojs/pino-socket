@@ -19,7 +19,9 @@ test('close connection', function (done) {
       tcpConnection.write('test', 'utf8', (err) => {
         // cannot write
         expect(err.message).to.eq('write after end')
-        done()
+        tcpConnection.end(() => {
+          done()
+        })
       })
     })
   })
@@ -40,9 +42,7 @@ test('retry connection', function (done) {
     // TCP connection is still writable
     expect(tcpConnection.writableEnded).to.eq(false)
     if (counter === 2) {
-      tcpConnection.end(() => {
-        done()
-      })
+      tcpConnection.end(() => done())
     }
   })
 })

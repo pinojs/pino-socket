@@ -62,7 +62,9 @@ test('recovery', function (done) {
                   // make sure that no number is missing
                   expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
                 } finally {
-                  done()
+                  tcpConnection.end(() => {
+                    done()
+                  })
                 }
               })
             }

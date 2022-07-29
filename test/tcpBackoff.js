@@ -22,7 +22,7 @@ test('tcp backoff', function testTcpBackoff (done) {
         const nextBackoffDelay = exponentialStrategy.next()
         // initial, 10, 100... next delay should be 1000
         expect(nextBackoffDelay).to.eq(1000)
-        tcpConnection.end('', 'utf8', () => done())
+        tcpConnection.end(() => done())
       }
     }
   })
