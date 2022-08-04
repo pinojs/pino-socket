@@ -92,6 +92,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
 test('tcp reconnect after initial failure', async function testTcpReconnectAfterInitialFailure () {
   let failureCount = 0
   let openCount = 0
+  let closeCount = 0
   let counter = 0
   function sendData () {
     setInterval(() => {
@@ -108,6 +109,7 @@ test('tcp reconnect after initial failure', async function testTcpReconnectAfter
   })
   tcpConnection.on('open', () => { openCount++ })
   tcpConnection.on('socketError', () => { failureCount++ })
+  tcpConnection.on('socketClose', () => { closeCount++ })
   sendData()
   const received = await new Promise((resolve, reject) => {
     let closing = false
@@ -129,6 +131,7 @@ test('tcp reconnect after initial failure', async function testTcpReconnectAfter
       }
     })
   })
+  expect(closeCount).to.eq(1)
   expect(openCount).to.eq(1)
   expect(failureCount).to.gte(counter)
   expect(received.length).to.eq(1)
