@@ -137,6 +137,7 @@ test('tcp reconnect after initial failure', async function testTcpReconnectAfter
   expect(received.length).to.eq(1)
   expect(received[0].data.toString('utf8')).to.eq(`log${counter}\n`)
   tcpConnection.end()
+  process.stdin.removeAllListeners()
 })
 
 test('tcp no reconnect when socket is gracefully closed', function testTcpNoReconnectSocketGracefullyClosed (done) {
@@ -165,6 +166,7 @@ test('tcp no reconnect when socket is gracefully closed', function testTcpNoReco
       expect(msgCount).to.eq(1)
       // tcp connection should be closed!
       server.close(() => {
+        process.stdin.removeAllListeners()
         done()
       })
     })
