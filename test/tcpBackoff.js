@@ -4,6 +4,7 @@
 const TcpConnection = require('../lib/TcpConnection')
 const { ExponentialStrategy } = require('backoff')
 const { expect } = require('chai')
+const { performance } = require('perf_hooks')
 
 test('tcp backoff', function testTcpBackoff (done) {
   let closeCount = 0
