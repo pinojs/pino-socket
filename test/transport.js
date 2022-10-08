@@ -141,3 +141,83 @@ test('udp secure fail', function updSecure (done) {
     })
     .catch(done)
 })
+
+test('udp packet overflow - throw exception on no max packet size option)', function udp (done) {
+  let server
+  let transport
+
+  process.removeAllListeners('uncaughtException')
+
+  process.once('uncaughtException', (err) => {
+    expect(err.message).equal('send EMSGSIZE')
+    done()
+  })
+
+  createUdpListener((msg) => {
+    done()
+
+    server.close()
+    server.unref()
+  })
+    .then((serverSocket) => {
+      server = serverSocket
+      const { address, port } = server.address()
+
+      transport = pino.transport({
+        target: '../psock.js',
+        level: 'info',
+        options: {
+          mode: 'udp',
+          address,
+          port
+        }
+      })
+      const log = pino(transport)
+
+      const overflowBuffer = Buffer.alloc(66666, 'a')
+      log.info(overflowBuffer.toString())
+    })
+    .catch(done)
+})
+
+test('udp packet overflow - skip packet when using max packet size option', function udp (done) {
+  let server
+  let transport
+
+  createUdpListener((msg) => {
+    expect(msg).to.contain('"msg":"hello UDP world"')
+    done()
+
+    server.close()
+    server.unref()
+  })
+    .then((serverSocket) => {
+      server = serverSocket
+      const { address, port } = server.address()
+
+      transport = pino.transport({
+        target: '../psock.js',
+        level: 'info',
+        options: {
+          mode: 'udp',
+          address,
+          port,
+          maxUdpPacketSize: 65507
+        }
+      })
+      const log = pino(transport)
+
+      // will be skipped
+      const overflowBuffer = Buffer.alloc(66667, 'a')
+      log.info(overflowBuffer.toString())
+
+      // we can use timeout here, but it's not reliable
+      // in a test environment
+      transport.flushSync()
+
+      // will be sent
+      const trueMessage = 'hello UDP world'
+      log.info(trueMessage)
+    })
+    .catch(done)
+})

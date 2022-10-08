@@ -33,7 +33,8 @@ function cli () {
     version: Boolean,
     settings: String,
     recovery: Boolean,
-    'recovery-queue-max-size': Number
+    'recovery-queue-max-size': Number,
+    'max-udp-packet-size': Number
   }
   const shortOpts = {
     u: '--unixsocket',

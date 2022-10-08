@@ -22,3 +22,4 @@
   -ne | --no-echo                   disable echoing received messages to stdout
       | --recovery                  enable recovery mode
       | --recovery-queue-max-size   maximum size of items added to the recovery queue; default: 1024
+      | --max-udp-packet-size       maximum size of udp packet; default: unlimited

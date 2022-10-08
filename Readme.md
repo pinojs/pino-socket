@@ -118,6 +118,7 @@ $ node foo | pino-socket -u /tmp/unix.sock
 + `--no-echo` (`-ne`): disable echoing received messages to stdout.
 + `--recovery`: enable recovery mode for TCP (only works with `--mode=tcp`). Default: off.
 + `--recovery-queue-max-size <n>`: maximum size of items (`<n>`) added to the recovery queue. Default: 1024.
++ `--max-udp-packet-size`: maximum size of udp packet; Default: unlimited.
 
 [rsyscee]: http://www.rsyslog.com/doc/mmjsonparse.html
 
