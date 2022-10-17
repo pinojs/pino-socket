@@ -1,6 +1,6 @@
 {
   "name": "pino-socket",
-  "version": "7.2.0",
+  "version": "7.3.0",
   "description": "A pino 'transport' for writing to a tcp, udp, or unix socket",
   "homepage": "https://github.com/pinojs/pino-socket",
   "bugs": "https://github.com/pinojs/pino-socket/issues",
