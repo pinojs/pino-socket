@@ -1,6 +1,6 @@
 # pino-socket
 [![npm version](https://img.shields.io/npm/v/pino-socket)](https://www.npmjs.com/package/pino-socket)
-[![Build Status](https://img.shields.io/github/workflow/status/pinojs/pino-socket/CI)](https://github.com/pinojs/pino-socket/actions)
+![Build Status](https://github.com/pinojs/pino-socket/workflows/CI/badge.svg)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://standardjs.com/)
 
 **Lead maintainer:** [jsumners](https://github.com/jsumners)
