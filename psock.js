@@ -2,8 +2,8 @@
 'use strict'
 
 const path = require('path')
-const tcpConnectionFactory = require(path.join(__dirname, 'lib', 'TcpConnection'))
-const udpConnectionFactory = require(path.join(__dirname, 'lib', 'UdpConnection'))
+const tcpConnectionFactory = require('./lib/TcpConnection')
+const udpConnectionFactory = require('./lib/UdpConnection')
 const transport = require('./lib/pino-transport')
 const split2 = require('split2')
 const pump = require('pump')
