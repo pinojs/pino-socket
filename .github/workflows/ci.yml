@@ -40,6 +40,9 @@ jobs:
       matrix:
         node-version: [14, 16, 18]
         os: [macos-latest, ubuntu-latest]
+        exclude:
+          - node-version: 14
+            os: macos-latest
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
