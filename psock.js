@@ -86,11 +86,11 @@ function cli () {
 
   function shutdown () {
     try {
-      connection.close()
-    } catch (e) {
-    // I assume that due to the closing of the pipe, the dgram/tcp socket has
-    // some issues shutting down gracefully. Don't really care, though. So
-    // this try/catch is here to suppress the resulting error.
+      connection.destroy()
+    } catch {
+      // I assume that due to the closing of the pipe, the dgram/tcp socket has
+      // some issues shutting down gracefully. Don't really care, though. So
+      // this try/catch is here to suppress the resulting error.
       process.exit()
     }
   }
