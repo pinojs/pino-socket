@@ -22,7 +22,8 @@ test('issue #5', async function (t) {
   server.listen(() => {
     const { address, port } = server.address()
     const scriptPath = path.join(__dirname, 'fixtures', 'issue5.js')
-    const script = spawn('node', [scriptPath])
+    const script = spawn('node', [scriptPath], { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] })
+    script.send('start')
     const psockPath = path.join(__dirname, '..', 'psock.js')
     const psock = spawn('node', [psockPath, '-a', address, '-p', port, '-m', 'tcp', '-e'])
 
