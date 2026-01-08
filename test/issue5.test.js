@@ -1,60 +1,47 @@
 'use strict'
 
-const test = require('node:test')
-const net = require('node:net')
-const path = require('node:path')
-const { fork, spawn } = require('node:child_process')
-const { Transform } = require('node:stream')
+const { test } = require('node:test')
+const net = require('net')
+const path = require('path')
+const { spawn } = require('child_process')
+const { withResolvers } = require('./utils')
 
-const { default: why } = require('why-is-node-running')
-
-// https://github.com/pinojs/pino-socket/issues/5
-test('issue #5', (t, done) => {
+test('issue #5', async function (t) {
   t.plan(2)
+  const {
+    promise: scriptPromise,
+    resolve: scriptResolve
+  } = withResolvers()
+  const {
+    promise: psockPromise,
+    resolve: psockResolve
+  } = withResolvers()
 
   const server = net.createServer()
   server.unref()
   server.listen(() => {
     const { address, port } = server.address()
     const scriptPath = path.join(__dirname, 'fixtures', 'issue5.js')
+    const script = spawn('node', [scriptPath], { stdio: ['pipe', 'pipe', 'pipe', 'ipc'] })
+    script.send('start')
     const psockPath = path.join(__dirname, '..', 'psock.js')
-    const script = fork(scriptPath, {
-      stdio: ['pipe', 'pipe', 'pipe', 'ipc']
-    })
-    const psock = spawn(
-      process.argv0,
-      [psockPath, '-a', address, '-p', port, '-m', 'tcp', '-ne']
-    )
+    const psock = spawn('node', [psockPath, '-a', address, '-p', port, '-m', 'tcp', '-e'])
 
-    script.on('close', (code, signal) => {
-      process._rawDebug('!!! script close', code, signal)
+    script.on('close', (code) => {
       t.assert.equal(code, 1)
+      scriptResolve()
     })
-    // script.stdout.pipe(process.stdout)
-    script.stdout.pipe(psock.stdin)
-    // psock.stdin.pipe(process.stdout)
-    psock.stdin.pipe(
-      new Transform({
-        transform (chunk, enc, cb) {
-          process._rawDebug('!!! psock.stdin', chunk.toString())
-          cb(null, chunk)
-        }
-      })
-    )
 
     let output = ''
-    psock.stdin.on('data', (data) => {
-      process._rawDebug('!!! psock data', data.toString())
-      output += data.toString()
+    script.stdout.pipe(psock.stdin)
+    psock.stdout.on('data', chunk => {
+      output += chunk.toString()
     })
-    psock.on('close', (code, signal) => {
-      process._rawDebug('!!! psock close', code, signal)
-      t.assert.equal(output.length > 0, true)
-      done()
-    })
-
-    script.send('doit', (error) => {
-      process._rawDebug('!!! send result', error)
+    psock.on('close', () => {
+      t.assert.strictEqual(output.length > 0, true)
+      psockResolve()
     })
   })
+
+  await Promise.all([scriptPromise, psockPromise])
 })

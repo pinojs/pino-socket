@@ -3,17 +3,7 @@
 const { after, test } = require('node:test')
 const path = require('node:path')
 const { spawn } = require('node:child_process')
-const { createTcpListener, createUdpListener } = require('./utils')
-
-function withResolvers () {
-  let _resolve
-  let _reject
-  const promise = new Promise((resolve, reject) => {
-    _resolve = resolve
-    _reject = reject
-  })
-  return { promise, resolve: _resolve, reject: _reject }
-}
+const { createTcpListener, createUdpListener, withResolvers } = require('./utils')
 
 // We need this `after` nonsense because no amount of removing listeners
 // or sending termination signals will stop the child processes.
