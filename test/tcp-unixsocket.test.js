@@ -1,11 +1,11 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const net = require('net')
-const path = require('path')
-const fs = require('fs')
-const spawn = require('child_process').spawn
-const expect = require('chai').expect
+const test = require('node:test')
+const net = require('node:net')
+const path = require('node:path')
+const fs = require('node:fs')
+const spawn = require('node:child_process').spawn
+
 const unixSocketPath = '/tmp/unix.sock'
 
 function createUnixSockListener (msgHandler) {
@@ -44,11 +44,16 @@ function unixSocketTest (done, socketOptions, cb) {
     .catch(done)
 }
 
-test('unix socket test', (done) => {
+test.after(() => {
+  setImmediate(() => process.exit(0))
+})
+
+test('unix socket test', (t, done) => {
+  t.plan(2)
   unixSocketTest(done, [], (msg, socket) => {
     try {
-      expect(msg).to.contain('"foo":"bar"')
-      expect(msg.substr(-1)).to.equal('\n')
+      t.assert.equal(msg.includes('"foo":"bar"'), true)
+      t.assert.equal(msg.at(-1), '\n')
       done()
     } catch (e) {
       done(e)

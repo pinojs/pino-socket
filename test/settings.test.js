@@ -1,15 +1,16 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const net = require('net')
-const path = require('path')
-const spawn = require('child_process').spawn
-const expect = require('chai').expect
+const test = require('node:test')
+const net = require('node:net')
+const path = require('node:path')
+const spawn = require('node:child_process').spawn
 
-test('loads settings from a file (switches take precedence)', function (done) {
+test('loads settings from a file (switches take precedence)', function (t, done) {
+  t.plan(1)
+
   const server = net.createServer((connection) => {
     connection.once('data', (data) => {
-      expect(data + '').to.equal('log 1\n')
+      t.assert.equal(data + '', 'log 1\n')
       finished()
     })
   })
@@ -18,6 +19,10 @@ test('loads settings from a file (switches take precedence)', function (done) {
     server.close()
     server.unref()
     done()
+    // There's no reason we should have to do this, but all of
+    // our efforts to terminate the resources created during
+    // this test fail. 🤷‍♂️
+    setImmediate(() => { process.exit(0) })
   }
   server.listen(0, '127.0.0.1', () => {
     const address = server.address().address

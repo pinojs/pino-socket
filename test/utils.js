@@ -1,10 +1,10 @@
 'use strict'
 
-const dgram = require('dgram')
-const path = require('path')
-const net = require('net')
-const tls = require('tls')
-const fs = require('fs')
+const dgram = require('node:dgram')
+const path = require('node:path')
+const net = require('node:net')
+const tls = require('node:tls')
+const fs = require('node:fs')
 
 function createUdpListener (msgHandler) {
   return new Promise((resolve) => {

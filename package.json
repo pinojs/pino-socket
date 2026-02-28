@@ -8,9 +8,8 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "standard && mocha --ui qunit -R dot test",
-    "test:unit": "mocha --ui qunit test/transport.js",
-    "cov": "nyc mocha --ui qunit -R dot test"
+    "test": "npm run lint && borp -r '@jsumners/line-reporter' 'test/*.test.js'",
+    "test:unit": "borp test/transport.test.js"
   },
   "bin": {
     "pino-socket": "./psock.js"
@@ -26,10 +25,10 @@
     "url": "https://github.com/pinojs/pino-socket"
   },
   "devDependencies": {
-    "chai": "^4.3.6",
+    "@jsumners/line-reporter": "^1.0.1",
+    "borp": "^1.0.0",
     "eslint": "^9.39.1",
     "get-port": "^5.1.1",
-    "mocha": "^10.0.0",
     "neostandard": "^0.12.2",
     "pino": "^8.0.0",
     "thread-stream": "^2.2.0",

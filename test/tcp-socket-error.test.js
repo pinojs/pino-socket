@@ -1,10 +1,21 @@
 'use strict'
-/* eslint-env node, mocha */
 
+const test = require('node:test')
+const { setTimeout: sleep } = require('node:timers/promises')
 const TcpConnection = require('../lib/TcpConnection')
-const { expect } = require('chai')
 
-test('close connection', function (done) {
+let ready = 0
+test.after(async () => {
+  // eslint-disable-next-line no-unmodified-loop-condition
+  while (ready !== 2) {
+    await sleep(100)
+  }
+  setImmediate(process.exit(0))
+})
+
+test('close connection', function (t, done) {
+  t.plan(2)
+
   const tcpConnection = TcpConnection({
     address: '127.0.0.1',
     port: 65535,
@@ -15,22 +26,25 @@ test('close connection', function (done) {
   })
   tcpConnection.on('finish', () => {
     process.nextTick(() => {
-      expect(tcpConnection.destroyed).to.eq(true)
+      t.assert.equal(tcpConnection.destroyed, true)
       tcpConnection.write('test', 'utf8', (err) => {
         // cannot write
-        expect(err.message).to.eq('write after end')
+        t.assert.equal(err.message, 'write after end')
         tcpConnection.end(() => {
           done()
+          setImmediate(() => { ready++ })
         })
       })
     })
   })
 })
 
-test('retry connection', function (done) {
+test('retry connection', function (t, done) {
+  t.plan(3)
+
   const tcpConnection = TcpConnection({
     address: '127.0.0.1',
-    port: 65535,
+    port: 65534,
     reconnect: false
   })
   let counter = 0
@@ -40,9 +54,12 @@ test('retry connection', function (done) {
   }, 100)
   tcpConnection.on('socketError', () => {
     // TCP connection is still writable
-    expect(tcpConnection.writableEnded).to.eq(false)
+    t.assert.equal(tcpConnection.writableEnded, false)
     if (counter === 2) {
-      tcpConnection.end(() => done())
+      tcpConnection.end(() => {
+        done()
+        setImmediate(() => { ready++ })
+      })
     }
   })
 })

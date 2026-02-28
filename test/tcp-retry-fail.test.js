@@ -1,10 +1,11 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const { expect } = require('chai')
+const test = require('node:test')
 const TcpConnection = require('../lib/TcpConnection')
 
-test('tcp retry fail', function testTcpRetryFail (done) {
+test('tcp retry fail', function testTcpRetryFail (t, done) {
+  t.plan(2)
+
   let socketErrorCount = 0
   const tcpConnection = TcpConnection({
     address: '127.0.0.1',
@@ -17,10 +18,11 @@ test('tcp retry fail', function testTcpRetryFail (done) {
     socketErrorCount++
   })
   tcpConnection.on('reconnectFailure', (lastError) => {
-    expect(socketErrorCount).to.eq(3)
-    expect(lastError).to.be.an('error')
+    t.assert.equal(socketErrorCount, 3)
+    t.assert.equal(lastError instanceof Error, true)
     tcpConnection.end(() => {
       done()
+      setImmediate(() => process.exit(0))
     })
   })
 })

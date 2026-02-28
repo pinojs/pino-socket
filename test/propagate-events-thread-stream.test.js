@@ -1,9 +1,9 @@
 'use strict'
-/* eslint-env node, mocha */
 
+const test = require('node:test')
+const { join } = require('node:path')
+const net = require('node:net')
 const ThreadStream = require('thread-stream')
-const { join } = require('path')
-const net = require('net')
 
 function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
@@ -24,7 +24,9 @@ function startServer ({ address, port, next }) {
   return socket
 }
 
-test('#propagateEvents', function (done) {
+test('#propagateEvents', function (t, done) {
+  t.plan(1)
+
   const server = startServer({ next })
   let stream
   function connect (address, port) {
@@ -38,7 +40,7 @@ test('#propagateEvents', function (done) {
       },
       sync: true
     })
-    stream.on('error', (err) => { console.log({ err })/* ignore */ })
+    stream.on('error', (err) => { console.log({ err }) })
     stream.on('open', () => {
       // should receive the event 'open' from the worker thread
       stream.write('log1')
@@ -47,15 +49,19 @@ test('#propagateEvents', function (done) {
 
   function next (msg) {
     switch (msg.action) {
-      case 'started':
+      case 'started': {
         connect(msg.address, msg.port)
         break
-      case 'data':
+      }
+
+      case 'data': {
+        t.assert.equal(msg.data, 'log1')
         stream.end()
         server.close(() => {
           done()
         })
         break
+      }
     }
   }
 })

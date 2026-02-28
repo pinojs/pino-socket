@@ -1,10 +1,9 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const net = require('net')
-const path = require('path')
-const spawn = require('child_process').spawn
-const expect = require('chai').expect
+const test = require('node:test')
+const net = require('node:net')
+const path = require('node:path')
+const spawn = require('node:child_process').spawn
 
 function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
@@ -25,7 +24,9 @@ function startServer ({ address, port, next }) {
   return socket
 }
 
-test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (done) {
+test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (t, done) {
+  t.plan(1)
+
   let msgCount = 0
   let address
   let port
@@ -43,10 +44,11 @@ test('tcp reconnect after ECONNREFUSED', function testTcpReconnect (done) {
         case 'data':
           msgCount += 1
           server.close(() => {
-            expect(msgCount).to.equal(1)
+            t.assert.equal(msgCount, 1)
             server.close()
             psock.kill()
             done()
+            setImmediate(() => process.exit(0))
           })
       }
     }

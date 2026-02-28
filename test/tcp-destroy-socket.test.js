@@ -1,9 +1,8 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const net = require('net')
+const test = require('node:test')
+const net = require('node:net')
 const TcpConnection = require('../lib/TcpConnection')
-const expect = require('chai').expect
 
 function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
@@ -24,16 +23,14 @@ function startServer ({ address, port, next }) {
   return socket
 }
 
-test('tcp beforeDataWrite', function testTcpBeforeDataWrite (done) {
+test('tcp destroy socket', function testTcpDestroySocket (t, done) {
+  t.plan(2)
+
   let tcpConnection
   function connect (address, port) {
     tcpConnection = TcpConnection({
       address,
-      port,
-      onBeforeDataWrite: (data) => {
-        expect(data.toString()).to.eq('log1\n')
-        return Buffer.from('log2\n', 'utf8')
-      }
+      port
     })
     tcpConnection.on('error', (err) => { console.log({ err })/* ignore */ })
     tcpConnection.write('log1\n', 'utf8', () => {
@@ -51,10 +48,11 @@ test('tcp beforeDataWrite', function testTcpBeforeDataWrite (done) {
         msgCount += 1
         tcpConnection.end(() => {
           process.nextTick(() => {
-            expect(msg.data.toString()).to.eq('log2\n')
-            expect(msgCount).to.eq(1)
+            t.assert.equal(tcpConnection._socket.destroyed, true)
+            t.assert.equal(msgCount, 1)
             server.close(() => {
               done()
+              setImmediate(() => process.exit(0))
             })
           })
         })

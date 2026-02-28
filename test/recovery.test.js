@@ -1,9 +1,8 @@
 'use strict'
-/* eslint-env node, mocha */
 
+const test = require('node:test')
+const net = require('node:net')
 const TcpConnection = require('../lib/TcpConnection')
-const { expect } = require('chai')
-const net = require('net')
 
 function startServer ({ address, port, next }) {
   const socket = net.createServer((connection) => {
@@ -24,19 +23,22 @@ function startServer ({ address, port, next }) {
   return socket
 }
 
-test('recovery', function (done) {
+test('recovery', function (t, done) {
+  t.plan(2)
+
   let address
   let port
   let tcpConnection
   let counter = 0
   let firstServerClosing = false
   let secondServerClosing = false
+  let dataSendInt
   const received = []
 
   function sendData () {
-    setInterval(() => {
+    dataSendInt = setInterval(() => {
       counter++
-      tcpConnection.write(`log${counter}\n`, 'utf8', () => { /* ignore */ })
+      tcpConnection.write(`log${counter}\n`, 'utf8', () => {})
     }, 100)
   }
 
@@ -46,7 +48,7 @@ test('recovery', function (done) {
       port,
       next: (msg) => {
         switch (msg.action) {
-          case 'data':
+          case 'data': {
             received.push(msg)
             if (received.length > 5 && !secondServerClosing) {
               secondServerClosing = true
@@ -58,26 +60,34 @@ test('recovery', function (done) {
                     .split('\n')
                     .filter(it => it !== '')
                   const logNumbers = logs.map(it => parseInt(it.replace('log', '')))
-                  expect(logs.length).to.eq(logNumbers[logNumbers.length - 1])
+                  t.assert.equal(logs.length, logNumbers[logNumbers.length - 1])
                   // make sure that no number is missing
-                  expect(logNumbers).to.deep.eq(Array.from({ length: logNumbers.length }, (_, i) => i + 1))
+                  t.assert.deepEqual(logNumbers, Array.from({ length: logNumbers.length }, (_, i) => i + 1))
                 } finally {
-                  tcpConnection.end(() => {
+                  clearInterval(dataSendInt)
+                  tcpConnection.destroy(null, () => {
                     done()
+                    // There's no reason we should have to do this, but all of
+                    // our efforts to terminate the resources created during
+                    // this test fail. 🤷‍♂️
+                    setImmediate(() => { process.exit(0) })
                   })
                 }
               })
             }
             break
+          }
         }
       }
     })
+
+    secondServer.unref()
   }
 
   const firstServer = startServer({
     next: (msg) => {
       switch (msg.action) {
-        case 'started':
+        case 'started': {
           address = msg.address
           port = msg.port
           tcpConnection = TcpConnection({
@@ -88,18 +98,24 @@ test('recovery', function (done) {
           })
           sendData()
           break
-        case 'data':
+        }
+
+        case 'data': {
           received.push(msg)
           // receive one message and close the server
           if (!firstServerClosing) {
             firstServerClosing = true
             firstServer.close(() => {
-              // start the second server with a delay to purposely miss writes (which are executed every 100ms)
+              // start the second server with a delay to purposely miss
+              // writes (which are executed every 100ms)
               setTimeout(startSecondServer, 150)
             })
             break
           }
+        }
       }
     }
   })
+
+  firstServer.unref()
 })

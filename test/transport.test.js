@@ -1,17 +1,22 @@
 'use strict'
-/* eslint-env node, mocha */
 
+const test = require('node:test')
 const pino = require('pino')
-const { expect } = require('chai')
 const { createSecureTcpListener, createTcpListener, createUdpListener } = require('./utils')
 
-test('tcp send', function tcp (done) {
+test.after(() => {
+  setImmediate(() => process.exit(0))
+})
+
+test('tcp send', function tcp (t, done) {
+  t.plan(2)
+
   let socket
   let transport
 
   createTcpListener((msg) => {
-    expect(msg).to.contain('"msg":"hello TCP world"')
-    expect(msg.substr(-1)).to.equal('\n')
+    t.assert.equal(msg.includes('"msg":"hello TCP world"'), true)
+    t.assert.equal(msg.at(-1), '\n')
     done()
 
     socket.close()
@@ -37,13 +42,15 @@ test('tcp send', function tcp (done) {
     .catch(done)
 })
 
-test('tcp secure send', function tcpSecure (done) {
+test('tcp secure send', function tcpSecure (t, done) {
+  t.plan(2)
+
   let socket
   let transport
 
   createSecureTcpListener((msg) => {
-    expect(msg).to.contain('"msg":"hello secure TCP world"')
-    expect(msg.substr(-1)).to.equal('\n')
+    t.assert.equal(msg.includes('"msg":"hello secure TCP world"'), true)
+    t.assert.equal(msg.at(-1), '\n')
     done()
 
     socket.close()
@@ -72,13 +79,15 @@ test('tcp secure send', function tcpSecure (done) {
     .catch(done)
 })
 
-test('udp send', function udp (done) {
+test('udp send', function udp (t, done) {
+  t.plan(2)
+
   let server
   let transport
 
   createUdpListener((msg) => {
-    expect(msg).to.contain('"msg":"hello UDP world"')
-    expect(msg.substr(-1)).to.equal('\n')
+    t.assert.equal(msg.includes('"msg":"hello UDP world"'), true)
+    t.assert.equal(msg.at(-1), '\n')
     done()
 
     server.close()
@@ -104,13 +113,15 @@ test('udp send', function udp (done) {
     .catch(done)
 })
 
-test('udp secure fail', function updSecure (done) {
+test('udp secure fail', function updSecure (t, done) {
+  t.plan(1)
+
   let server
 
   process.removeAllListeners('uncaughtException')
 
   process.once('uncaughtException', (err) => {
-    expect(err.message).equal('Secure connection for udp protocol is not supported')
+    t.assert.equal(err.message, 'Secure connection for udp protocol is not supported')
     done()
   })
 
@@ -142,14 +153,16 @@ test('udp secure fail', function updSecure (done) {
     .catch(done)
 })
 
-test('udp packet overflow - throw exception on no max packet size option)', function udp (done) {
+test('udp packet overflow - throw exception on no max packet size option)', function udp (t, done) {
+  t.plan(1)
+
   let server
   let transport
 
   process.removeAllListeners('uncaughtException')
 
   process.once('uncaughtException', (err) => {
-    expect(err.message).equal('send EMSGSIZE')
+    t.assert.equal(err.message, 'send EMSGSIZE')
     done()
   })
 
@@ -180,12 +193,14 @@ test('udp packet overflow - throw exception on no max packet size option)', func
     .catch(done)
 })
 
-test('udp packet overflow - skip packet when using max packet size option', function udp (done) {
+test('udp packet overflow - skip packet when using max packet size option', function udp (t, done) {
+  t.plan(1)
+
   let server
   let transport
 
   createUdpListener((msg) => {
-    expect(msg).to.contain('"msg":"hello UDP world"')
+    t.assert.equal(msg.includes('"msg":"hello UDP world"'), true)
     done()
 
     server.close()

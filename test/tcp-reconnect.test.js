@@ -1,12 +1,10 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const net = require('net')
-const path = require('path')
-const spawn = require('child_process').spawn
-const expect = require('chai').expect
+const test = require('node:test')
+const net = require('node:net')
+const path = require('node:path')
+const spawn = require('node:child_process').spawn
 const getPort = require('get-port')
-
 const TcpConnection = require('../lib/TcpConnection')
 
 function startServer ({ address, port, next }) {
@@ -28,7 +26,11 @@ function startServer ({ address, port, next }) {
   return socket
 }
 
-test('tcp reconnect', function testTcpReconnect (done) {
+test.after(() => setImmediate(() => process.exit(0)))
+
+test('tcp reconnect', function testTcpReconnect (t, done) {
+  t.plan(1)
+
   let msgCount = 0
   let address
   let port
@@ -58,7 +60,7 @@ test('tcp reconnect', function testTcpReconnect (done) {
           break
         case 'data':
           msgCount += 1
-          expect(msgCount).to.equal(2)
+          t.assert.equal(msgCount, 2)
           server.close()
           psock.kill()
           done()
@@ -89,7 +91,9 @@ test('tcp reconnect', function testTcpReconnect (done) {
   }
 })
 
-test('tcp reconnect after initial failure', async function testTcpReconnectAfterInitialFailure () {
+test('tcp reconnect after initial failure', async function testTcpReconnectAfterInitialFailure (t) {
+  t.plan(5)
+
   let failureCount = 0
   let openCount = 0
   let closeCount = 0
@@ -131,16 +135,18 @@ test('tcp reconnect after initial failure', async function testTcpReconnectAfter
       }
     })
   })
-  expect(closeCount).to.eq(1)
-  expect(openCount).to.eq(1)
-  expect(failureCount).to.gte(counter)
-  expect(received.length).to.eq(1)
-  expect(received[0].data.toString('utf8')).to.eq(`log${counter}\n`)
+  t.assert.equal(closeCount, 1)
+  t.assert.equal(openCount, 1)
+  t.assert.equal(failureCount >= counter, true)
+  t.assert.equal(received.length, 1)
+  t.assert.equal(received[0].data.toString('utf8'), `log${counter}\n`)
   tcpConnection.end()
   process.stdin.removeAllListeners()
 })
 
-test('tcp no reconnect when socket is gracefully closed', function testTcpNoReconnectSocketGracefullyClosed (done) {
+test('tcp no reconnect when socket is gracefully closed', function testTcpNoReconnectSocketGracefullyClosed (t, done) {
+  t.plan(1)
+
   let msgCount = 0
   let tcpConnection
   const server = startServer({ next })
@@ -163,7 +169,7 @@ test('tcp no reconnect when socket is gracefully closed', function testTcpNoReco
     })
     tcpConnection.write('data', 'utf8', () => { /* ignore */ })
     tcpConnection.on('close', () => {
-      expect(msgCount).to.eq(1)
+      t.assert.equal(msgCount, 1)
       // tcp connection should be closed!
       server.close(() => {
         process.stdin.removeAllListeners()

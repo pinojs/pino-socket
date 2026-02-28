@@ -1,9 +1,9 @@
 'use strict'
 
-const { test } = require('node:test')
-const net = require('net')
-const path = require('path')
-const { spawn } = require('child_process')
+const test = require('node:test')
+const net = require('node:net')
+const path = require('node:path')
+const { spawn } = require('node:child_process')
 const { withResolvers } = require('./utils')
 
 test('issue #5', async function (t) {

@@ -1,12 +1,15 @@
 'use strict'
-/* eslint-env node, mocha */
 
-const TcpConnection = require('../lib/TcpConnection')
+const test = require('node:test')
+const { performance } = require('node:perf_hooks')
 const { ExponentialStrategy } = require('backoff')
-const { expect } = require('chai')
-const { performance } = require('perf_hooks')
+const TcpConnection = require('../lib/TcpConnection')
 
-test('tcp backoff', function testTcpBackoff (done) {
+test.after(() => setImmediate(() => process.exit(0)))
+
+test('tcp backoff', function testTcpBackoff (t, done) {
+  t.plan(1)
+
   let closeCount = 0
   const exponentialStrategy = new ExponentialStrategy({
     initialDelay: 10,
@@ -23,7 +26,7 @@ test('tcp backoff', function testTcpBackoff (done) {
     if (closeCount === 3) {
       const nextBackoffDelay = exponentialStrategy.next()
       // initial, 10, 100... next delay should be 1000
-      expect(nextBackoffDelay).to.eq(1000)
+      t.assert.equal(nextBackoffDelay, 1000)
       tcpConnection.end(() => {
         process.stdin.removeAllListeners()
         done()
@@ -32,7 +35,9 @@ test('tcp backoff', function testTcpBackoff (done) {
   })
 })
 
-test('tcp backoff (primitive data)', function testTcpBackoffUsingPrimitiveData (done) {
+test('tcp backoff (primitive data)', function testTcpBackoffUsingPrimitiveData (t, done) {
+  t.plan(1)
+
   let closeCount = 0
   const tcpConnection = TcpConnection({
     address: '127.0.0.1',
@@ -50,7 +55,7 @@ test('tcp backoff (primitive data)', function testTcpBackoffUsingPrimitiveData (
     if (closeCount === 3) {
       // initial, 10, 100... next delay should be 1000
       const elapsed = performance.now() - start
-      expect(elapsed).to.be.below(1000)
+      t.assert.equal(elapsed < 1000, true)
       tcpConnection.end(() => {
         process.stdin.removeAllListeners()
         done()
