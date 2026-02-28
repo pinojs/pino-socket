@@ -30,13 +30,13 @@
     "eslint": "^9.39.1",
     "get-port": "^5.1.1",
     "neostandard": "^0.12.2",
-    "pino": "^8.0.0",
-    "thread-stream": "^2.2.0",
+    "pino": "^10.3.1",
+    "thread-stream": "^4.0.0",
     "why-is-node-running": "^3.2.2"
   },
   "dependencies": {
     "backoff": "^2.5.0",
-    "nopt": "^7.0.0",
+    "nopt": "^9.0.0",
     "pump": "^3.0.0",
     "split2": "^4.0.0",
     "through2": "^4.0.2"
