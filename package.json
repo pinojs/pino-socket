@@ -31,8 +31,7 @@
     "get-port": "^5.1.1",
     "neostandard": "^0.12.2",
     "pino": "^10.3.1",
-    "thread-stream": "^4.0.0",
-    "why-is-node-running": "^3.2.2"
+    "thread-stream": "^4.0.0"
   },
   "dependencies": {
     "backoff": "^2.5.0",
