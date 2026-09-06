@@ -9,6 +9,10 @@
 
      [33mcat log | pino-socket -m tcp -a 192.168.1.42 -p 1234[39m
 
+  [0mTo send [33mpino[39m logs via a unix socket (TCP mode is used automatically):[0m
+
+     [33mcat log | pino-socket -u /tmp/unix.sock[39m
+
   [36m[1mFlags[22m[39m
   [0m-h  | --help              Display Help
   -v  | --version                   display Version
@@ -16,7 +20,7 @@
   -a  | --address                   the address for the destination socket; default: 127.0.0.1
   -m  | --mode                      the protocol, either 'udp' or 'tcp'; default: 'udp'
   -p  | --port                      the port on the destination socket; default: '514'
-  -u  | --unixsocket                the path of unix socket; default: ''
+  -u  | --unixsocket                the path of unix socket; implies tcp mode; default: ''
   -r  | --reconnect                 enable tcp mode reconnecting
   -t  | --reconnectTries            number of reconnect attempts to make; default: 'Inifinity'
   -ne | --no-echo                   disable echoing received messages to stdout

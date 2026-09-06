@@ -29,13 +29,28 @@ const transport = pino.transport({
 pino(transport)
 ```
 
+To send logs to a unix socket, set `unixsocket`. TCP mode is selected
+automatically, because Node.js' dgram module (UDP) cannot connect to unix
+sockets:
+
+```js
+const pino = require('pino')
+const transport = pino.transport({
+  target: 'pino-socket',
+  options: {
+    unixsocket: '/tmp/unix.sock'
+  }
+})
+pino(transport)
+```
+
 ### Options
 
 | Name                                  | Description                                                                                                                                                                                                                                      |
 |---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `address`                             | The host address to connect to. Default: `127.0.0.1`.                                                                                                                                                                                            |
 | `port`                                | The host port to connect to. Default: `514`.                                                                                                                                                                                                     |
-| `unixsocket`                          | The unix socket path for the destination. Default: `&#8203;`.                                                                                                                                                                                    |
+| `unixsocket`                          | The unix socket path for the destination. When set, the connection is switched to TCP mode, because Node.js' dgram module (UDP) cannot use unix sockets. Default: `&#8203;`.                                                                                                                       |
 | `mode`                                | Either `tcp` or `udp`. Default: `udp`.                                                                                                                                                                                                           |
 | `secure`                              | Enable secure (TLS) connection. Default: false.                                                                                                                                                                                                  |
 | `noverify`                            | Allow connection to server with self-signed certificates. Default: false.                                                                                                                                                                        |
@@ -101,7 +116,7 @@ $ node foo | pino-socket -u /tmp/unix.sock
 ### CLI Options
 
 + `--settings` (`-s`): read settings from a JSON file (switches take precedence).
-+ `--unixsocket` (`-u`): the unix socket path for the destination. Default: `&#8203;`.
++ `--unixsocket` (`-u`): the unix socket path for the destination. Default: `&#8203;`. When set, TCP mode is used automatically (UDP cannot use unix sockets).
 + `--address` (`-a`): the address for the destination socket. Default: `127.0.0.1`.
 + `--port` (`-p`): the port for the destination socket. Default: `514`.
 + `--mode` (`-m`): either `tcp` or `udp`. Default: `udp`.

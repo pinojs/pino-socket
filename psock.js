@@ -75,6 +75,14 @@ function cli () {
     }
   }
 
+  // Node.js' dgram module (UDP) cannot connect to unix sockets, therefore the
+  // `unixsocket` option only works with TCP. To honor the user's intent,
+  // setting `unixsocket` switches the mode to TCP unless TCP is already
+  // selected (see issue #98).
+  if (options.unixsocket && options.mode !== 'tcp') {
+    options.mode = 'tcp'
+  }
+
   let connection
   if (options.mode === 'tcp') {
     connection = tcpConnectionFactory(options)
